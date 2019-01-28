@@ -4,8 +4,11 @@
 package io.github.guilhermedelemos.ac;
 
 public class App {
+
+    public static final String GREETING = "Olá mundo";
+
     public String getGreeting() {
-        return "Hello world.";
+        return GREETING;
     }
 
     public static void main(String[] args) {
