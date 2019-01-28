@@ -1,13 +1,14 @@
 language: java
-sudo: false
 
 jdk:
   - oraclejdk8
   - openjdk8
   - openjdk10
   - openjdk11
+
 addons:
   sonarcloud:
     organization: "guilhermedelemos-github"
+
 script:
   - ./gradlew sonarqube
