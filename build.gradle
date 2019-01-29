@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     implementation 'com.google.guava:guava:26.0-jre'
-    testImplementation 'junit:junit:4.12'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
     // Selenium Web Driver Manager
     implementation 'io.github.bonigarcia:webdrivermanager:3.2.0'
     // Selenium

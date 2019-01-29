@@ -1,11 +1,12 @@
 package io.github.guilhermedelemos.crawler.model;
 
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DomElement {
+public class DomElement extends CrawlerObject {
     private String id;
     private String tagName;
     private WebElement webElement;

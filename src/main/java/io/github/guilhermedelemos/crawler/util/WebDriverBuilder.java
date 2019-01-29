@@ -8,7 +8,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebDriverBuilder {
+public class WebDriverBuilder extends CrawlerObject {
     public static final String LANGUAGE_PT_BR = "pt-BR";
     public static final String LANGUAGE_EN_US = "en-US";
 

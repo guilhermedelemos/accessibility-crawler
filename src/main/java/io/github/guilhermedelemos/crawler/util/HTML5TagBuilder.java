@@ -5,7 +5,7 @@ import io.github.guilhermedelemos.crawler.model.HTML5Tag;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HTML5TagBuilder {
+public class HTML5TagBuilder extends CrawlerObject {
 
     public static List<HTML5Tag> buildTags() {
         List<HTML5Tag> tags = new ArrayList<>();

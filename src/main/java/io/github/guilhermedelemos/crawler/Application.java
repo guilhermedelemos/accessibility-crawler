@@ -2,7 +2,7 @@ package io.github.guilhermedelemos.crawler;
 
 import com.google.common.io.Resources;
 import io.github.guilhermedelemos.crawler.model.Site;
-import io.github.guilhermedelemos.crawler.util.Log;
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
 import io.github.guilhermedelemos.crawler.util.StrategySiteCSV;
 
 import java.io.IOException;
@@ -11,10 +11,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Application {
+public class Application extends CrawlerObject {
 
-    public static final String GREETING = "Welcome to Accessibility Crawler";
-    public static final String FAREWELL = "Done";
+    public static final String TITLE = "Accessibility Crawler";
+    public static final String GREETING = "Starting " + TITLE;
+    public static final String FAREWELL = TITLE + " ended";
 
     public static void main(String[] args) {
         Application app = new Application();
@@ -22,12 +23,29 @@ public class Application {
     }
 
     public void execute() {
-        Log.log(GREETING);
+        log.info(GREETING);
 
-        List<Site> controlSitesAria = null;
-        List<Site> controlSitesHTML5 = null;
-        List<Site> alexaSites = null;
-        List<Site> alexaSitesBrazil = null;
+        List<Site> sites = this.loadSites();
+
+        Crawler crawler = new Crawler();
+        boolean execucao = crawler.execute(sites);
+
+        if(execucao) {
+            log.info("Success");
+        } else {
+            log.info("Failure");
+        }
+
+        log.info(FAREWELL);
+    }
+
+    public List<Site> loadSites() {
+        log.info("Loading sites list");
+
+        List<Site> controlSitesAria;
+        List<Site> controlSitesHTML5;
+        List<Site> alexaSites;
+        List<Site> alexaSitesBrazil;
 
         try {
             controlSitesAria = (new StrategySiteCSV()).read(Resources.getResource("sites/control-sample-aria.csv").getPath());
@@ -35,9 +53,8 @@ public class Application {
             alexaSites = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50.csv").getPath());
             alexaSitesBrazil = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50-Brazil.csv").getPath());
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("File not found.");
-            System.exit(1);
+            log.error("Error on loading sites list", e);
+            return new ArrayList<>();
         }
 
         Set<Site> setSites = new LinkedHashSet<>();
@@ -48,17 +65,7 @@ public class Application {
 
         List<Site> sites = new ArrayList<>();
         sites.addAll(setSites);
-
-        Crawler crawler = new Crawler();
-        boolean execucao = crawler.execute(sites);
-
-        if(execucao) {
-            Log.log("Success");
-        } else {
-            Log.log("Failure");
-        }
-
-        Log.log(FAREWELL);
+        return sites;
     }
 
 }

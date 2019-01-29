@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrategySiteCSV {
+public class StrategySiteCSV extends CrawlerObject {
 
     protected BufferedReader in;
     private String separator = ";";
@@ -38,7 +38,7 @@ public class StrategySiteCSV {
             this.in.close();
             return sites;
         } catch(IOException | ParseException e) {
-            Log.log(e.toString());
+            log.error("StrategySiteCSV:read()", e);
             return new ArrayList<>();
         }
     }

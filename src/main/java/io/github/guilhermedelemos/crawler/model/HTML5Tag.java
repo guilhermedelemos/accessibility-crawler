@@ -1,8 +1,10 @@
 package io.github.guilhermedelemos.crawler.model;
 
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
+
 import java.util.List;
 
-public class HTML5Tag {
+public class HTML5Tag extends CrawlerObject {
 
     private String tag;
     private String context;

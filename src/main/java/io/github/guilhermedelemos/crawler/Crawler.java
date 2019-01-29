@@ -5,6 +5,7 @@ import io.github.guilhermedelemos.crawler.model.DomElement;
 import io.github.guilhermedelemos.crawler.model.HTML5Tag;
 import io.github.guilhermedelemos.crawler.model.Site;
 import io.github.guilhermedelemos.crawler.model.WebPage;
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
 import io.github.guilhermedelemos.crawler.util.HTML5TagBuilder;
 import io.github.guilhermedelemos.crawler.util.Log;
 import io.github.guilhermedelemos.crawler.util.WebDriverBuilder;
@@ -19,14 +20,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Crawler {
+public class Crawler extends CrawlerObject {
 
     public boolean execute(List<Site> sites) {
         if(sites == null || sites.isEmpty()) {
             return false;
         }
+        log.info("Sites list:");
         sites.forEach(item -> {
-            Log.log(item.toString());
+            log.info(new StringBuilder().append("url: ").append(item.getUrl()).toString());
         });
 
         try {
@@ -38,7 +40,7 @@ public class Crawler {
 
             return this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error processing sites", e);
             return false;
         }
     }
@@ -70,7 +72,7 @@ public class Crawler {
             }
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error scanning sites", e);
             return false;
         }
     }
@@ -79,24 +81,24 @@ public class Crawler {
         try {
             WebPage webPage = this.getWebPageMetadata(site);
 
-            Log.separator();
-            Log.log(webPage.getUrl());
-            Log.log("HTTP Status Code: " + webPage.getHttpStatusCode());
+            log.info("==========");
+            log.info(new StringBuilder().append("Site: ").append(webPage.getUrl()).toString());
+            log.info(new StringBuilder().append("HTTP Status Code: ").append(webPage.getHttpStatusCode()).toString());
 
             if (!this.siteIsValid(webPage)) {
-                Log.log("Invalid site skipped.");
+                log.info("Invalid site skipped.");
                 return false;
             }
 
             webDriver.get(webPage.getUrl());
             webPage.setUrlAfterRequest(webDriver.getCurrentUrl());
-            Log.log("URL after request: " + webPage.getUrlAfterRequest());
+            log.info(new StringBuilder().append("URL after request: ").append(webPage.getUrlAfterRequest()).toString());
 
             this.scanSiteForLandmarks(webPage, ariaLandmarks, webDriver);
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error scanning sites", e);
             return false;
         }
     }
@@ -104,13 +106,13 @@ public class Crawler {
     public boolean scanSiteForLandmarks(WebPage webPage, List<String> ariaLandmarks, WebDriver webDriver) {
         try {
             Iterator<String> it = ariaLandmarks.iterator();
+            int count = 0;
             while (it.hasNext()) {
                 String landmark = it.next();
-                List<WebElement> elements = webDriver.findElements(By.cssSelector("[role=" + landmark + "]"));
-                if (elements.isEmpty()) {
-                    Log.log("# Landmark " + landmark + " NOT found");
-                } else {
-                    Log.log("# Landmark " + landmark + " found");
+                List<WebElement> elements = webDriver.findElements(By.cssSelector(new StringBuilder().append("[role=").append(landmark).append("]").toString()));
+                if (!elements.isEmpty()) {
+                    count++;
+                    log.info(new StringBuilder().append("# Landmark ").append(landmark).append(" found").toString());
                     Iterator<WebElement> itWe = elements.iterator();
                     while (itWe.hasNext()) {
                         WebElement targetElement = itWe.next();
@@ -123,9 +125,12 @@ public class Crawler {
                     }
                 }
             }
+            if(count == 0) {
+                log.info("No ARIA landmarks was found");
+            }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error processing site", e);
             return false;
         }
     }
@@ -141,7 +146,7 @@ public class Crawler {
             webPage.setUrlAfterRequest(connection.getHeaderField("Location"));
             return webPage;
         } catch (IOException e) {
-            Log.log(e.toString());
+            log.error("Error retrieving site metadata", e);
             webPage.setHttpStatusCode(404);
             return webPage;
         }
@@ -159,7 +164,7 @@ public class Crawler {
         if (element == null) {
             return;
         }
-        Log.logWebElement(element.getWebElement(), level);
+        Log.logWebElement(element.getWebElement(), level, log);
         //subElements
         List<WebElement> children = element.getWebElement().findElements(By.xpath(".//*"));
         Iterator<WebElement> it = children.iterator();

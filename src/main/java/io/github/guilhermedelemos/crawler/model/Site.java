@@ -1,8 +1,12 @@
 package io.github.guilhermedelemos.crawler.model;
 
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Date;
 
-public class Site {
+public class Site extends CrawlerObject {
 
     private int rank;
     private String url;
@@ -33,11 +37,20 @@ public class Site {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof Site) {
-            return this.url.equals( ((Site) obj).url );
+        if(obj == this) {
+            return true;
+        } else if(obj instanceof Site) {
+            return new EqualsBuilder().append(this.url, ((Site) obj).url).isEquals();
         } else {
             return false;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).
+                append(url).
+                toHashCode();
     }
 
     public int getRank() {

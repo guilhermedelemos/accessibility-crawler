@@ -1,9 +1,11 @@
 package io.github.guilhermedelemos.crawler.model;
 
+import io.github.guilhermedelemos.crawler.util.CrawlerObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebPage {
+public class WebPage extends CrawlerObject {
     private String url;
     private String urlAfterRequest;
     private int httpStatusCode;
