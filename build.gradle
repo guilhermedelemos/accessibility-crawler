@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'jacoco'
     id "org.sonarqube" version "2.7"
 }
 
@@ -11,13 +12,23 @@ repositories {
 dependencies {
     implementation 'com.google.guava:guava:26.0-jre'
     testImplementation 'junit:junit:4.12'
+    // Selenium Web Driver Manager
+    implementation 'io.github.bonigarcia:webdrivermanager:3.2.0'
+    // Selenium
+    implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.3.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+    // Mockito
+    testImplementation 'org.mockito:mockito-core:2.+'
 }
 
 sonarqube {
     properties {
         property "sonar.projectName", "Accessibility Crawler"
-        property "sonar.projectKey", "io.github.guilhermedelemos.accessibilitycrawler"
+        property "sonar.projectKey", "io.github.guilhermedelemos.crawler"
     }
 }
 
-mainClassName = 'io.github.guilhermedelemos.ac.App'
+mainClassName = 'io.github.guilhermedelemos.crawler.Application'
