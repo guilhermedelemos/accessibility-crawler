@@ -25,7 +25,7 @@ public class Application extends CrawlerObject {
     public void execute() {
         log.info(GREETING);
 
-        List<Site> sites = this.loadSites();
+        List<Site> sites = this.loadSites(true);
 
         Crawler crawler = new Crawler();
         boolean execucao = crawler.execute(sites);
@@ -39,7 +39,7 @@ public class Application extends CrawlerObject {
         log.info(FAREWELL);
     }
 
-    public List<Site> loadSites() {
+    public List<Site> loadSites(boolean unique) {
         log.info("Loading sites list");
 
         List<Site> controlSitesAria;
@@ -59,15 +59,25 @@ public class Application extends CrawlerObject {
             return new ArrayList<>();
         }
 
-        Set<Site> setSites = new LinkedHashSet<>();
-        setSites.addAll(controlSitesAria);
-        setSites.addAll(controlSitesHTML5);
-        setSites.addAll(alexaSites);
-        setSites.addAll(alexaSitesBrazil);
-        setSites.addAll(alexaSitesUsa);
-
         List<Site> sites = new ArrayList<>();
-        sites.addAll(setSites);
+
+        if(unique) {
+            Set<Site> setSites = new LinkedHashSet<>();
+            setSites.addAll(controlSitesAria);
+            setSites.addAll(controlSitesHTML5);
+            setSites.addAll(alexaSites);
+            setSites.addAll(alexaSitesBrazil);
+            setSites.addAll(alexaSitesUsa);
+
+            sites.addAll(setSites);
+        } else {
+            sites.addAll(controlSitesAria);
+            sites.addAll(controlSitesHTML5);
+            sites.addAll(alexaSites);
+            sites.addAll(alexaSitesBrazil);
+            sites.addAll(alexaSitesUsa);
+        }
+
         return sites;
     }
 
