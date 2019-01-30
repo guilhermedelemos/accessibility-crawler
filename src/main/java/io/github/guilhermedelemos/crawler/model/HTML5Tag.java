@@ -6,6 +6,17 @@ import java.util.List;
 
 public class HTML5Tag extends CrawlerObject {
 
+    public static final String TAG_ARTICLE = "article";
+    public static final String TAG_ASIDE = "aside";
+    public static final String TAG_MAIN = "main";
+    public static final String TAG_NAV = "nav";
+    public static final String TAG_SECTION = "section";
+    public static final String TAG_HEADER = "header";
+    public static final String TAG_BODY = "body";
+    public static final String TAG_FOOTER = "footer";
+    public static final String TAG_FORM = "form";
+    public static final String ROLE_REGION = "region";
+
     private String tag;
     private String context;
     private List<String> invalidElements;

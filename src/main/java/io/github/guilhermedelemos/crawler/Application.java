@@ -46,12 +46,14 @@ public class Application extends CrawlerObject {
         List<Site> controlSitesHTML5;
         List<Site> alexaSites;
         List<Site> alexaSitesBrazil;
+        List<Site> alexaSitesUsa;
 
         try {
             controlSitesAria = (new StrategySiteCSV()).read(Resources.getResource("sites/control-sample-aria.csv").getPath());
             controlSitesHTML5 = (new StrategySiteCSV()).read(Resources.getResource("sites/control-sample-html5.csv").getPath());
             alexaSites = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50.csv").getPath());
             alexaSitesBrazil = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50-Brazil.csv").getPath());
+            alexaSitesUsa = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50-USA.csv").getPath());
         } catch (IOException e) {
             log.error("Error on loading sites list", e);
             return new ArrayList<>();
@@ -62,6 +64,7 @@ public class Application extends CrawlerObject {
         setSites.addAll(controlSitesHTML5);
         setSites.addAll(alexaSites);
         setSites.addAll(alexaSitesBrazil);
+        setSites.addAll(alexaSitesUsa);
 
         List<Site> sites = new ArrayList<>();
         sites.addAll(setSites);
