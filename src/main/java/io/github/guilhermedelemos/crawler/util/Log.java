@@ -1,5 +1,6 @@
 package io.github.guilhermedelemos.crawler.util;
 
+import io.github.guilhermedelemos.crawler.model.WebPage;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 
@@ -33,6 +34,24 @@ public class Log {
         log.info(String.format("%s%s%s", indentation, "Enabled ", element.isEnabled()));
         log.info(String.format("%s%s%s", indentation, "Selected ", element.isSelected()));
         log.info(String.format("%s%s%s", indentation, "Text ", element.getText()));
+    }
+
+    public void logWebPage(WebPage webPage) {
+        if(webPage == null) {
+            return;
+        }
+        webPage.getElements().forEach(element -> {
+            log.info(Messages.LOG_ELEMENT_FOUND);
+            log.info(String.format(LOG_PARAMS, Messages.LOG_ID, element.getId()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_TAG_NAME, element.getTagName()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_POSITION_X, element.getX()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_POSITION_Y, element.getY()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_HEIGHT, element.getHeight()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_WIDTH, element.getWidth()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_DISPLAYED, element.isDisplayed()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_ENABLED, element.isEnabled()));
+            log.info(String.format(LOG_PARAMS, Messages.LOG_TEXT, element.getText()));
+        });
     }
 
 }

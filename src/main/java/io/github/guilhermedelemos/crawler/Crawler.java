@@ -5,10 +5,7 @@ import io.github.guilhermedelemos.crawler.model.DomElement;
 import io.github.guilhermedelemos.crawler.model.HTML5Tag;
 import io.github.guilhermedelemos.crawler.model.Site;
 import io.github.guilhermedelemos.crawler.model.WebPage;
-import io.github.guilhermedelemos.crawler.util.CrawlerObject;
-import io.github.guilhermedelemos.crawler.util.HTML5TagBuilder;
-import io.github.guilhermedelemos.crawler.util.Log;
-import io.github.guilhermedelemos.crawler.util.WebDriverBuilder;
+import io.github.guilhermedelemos.crawler.util.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,6 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Crawler extends CrawlerObject {
+
+    public static final String LOG_PARAMS = "%s%s%s";
 
     public boolean execute(List<Site> sites) {
         if(sites == null || sites.isEmpty()) {
@@ -95,6 +94,9 @@ public class Crawler extends CrawlerObject {
             log.info(new StringBuilder().append("URL after request: ").append(webPage.getUrlAfterRequest()).toString());
 
             this.scanSiteForLandmarks(webPage, ariaLandmarks, webDriver);
+            this.scanSiteForHTML5Tags(webPage, ariaLandmarks, webDriver);
+
+            this.logWebPage(webPage);
 
             return true;
         } catch (Exception e) {
@@ -120,6 +122,7 @@ public class Crawler extends CrawlerObject {
                         domElement.setId(targetElement.getAttribute("id"));
                         domElement.setTagName(targetElement.getTagName());
                         domElement.setWebElement(targetElement);
+                        domElement.setAriaLandmark(landmark);
                         webPage.addElement(domElement);
                         this.extractElements(domElement);
                     }
@@ -133,6 +136,10 @@ public class Crawler extends CrawlerObject {
             log.error("Error processing site", e);
             return false;
         }
+    }
+
+    public boolean scanSiteForHTML5Tags(WebPage webPage, List<String> ariaLandmarks, WebDriver webDriver) {
+        return false;
     }
 
     public WebPage getWebPageMetadata(URL url) {
@@ -164,7 +171,7 @@ public class Crawler extends CrawlerObject {
         if (element == null) {
             return;
         }
-        Log.logWebElement(element.getWebElement(), level, log);
+//        Log.logWebElement(element.getWebElement(), level, log);
         //subElements
         List<WebElement> children = element.getWebElement().findElements(By.xpath(".//*"));
         Iterator<WebElement> it = children.iterator();
@@ -174,6 +181,8 @@ public class Crawler extends CrawlerObject {
             domElement.setId(targetElement.getAttribute("id"));
             domElement.setTagName(targetElement.getTagName());
             domElement.setWebElement(targetElement);
+            domElement.setAriaLandmark(element.getAriaLandmark());
+            domElement.setHtml5Tag(element.getHtml5Tag());
             element.addChild(domElement);
             this.extractElements(domElement, level + 1);
         }
