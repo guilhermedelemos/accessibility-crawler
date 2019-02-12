@@ -13,7 +13,7 @@ dependencies {
     implementation 'com.google.guava:guava:26.0-jre'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     // Selenium Web Driver Manager
-    implementation 'io.github.bonigarcia:webdrivermanager:3.2.0'
+    implementation 'io.github.bonigarcia:webdrivermanager:3.3.0'
     // Selenium
     implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
     // JUnit 5
