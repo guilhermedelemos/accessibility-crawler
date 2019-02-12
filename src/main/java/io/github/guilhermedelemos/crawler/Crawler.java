@@ -6,9 +6,7 @@ import io.github.guilhermedelemos.crawler.model.HTML5Tag;
 import io.github.guilhermedelemos.crawler.model.Site;
 import io.github.guilhermedelemos.crawler.model.WebPage;
 import io.github.guilhermedelemos.crawler.util.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -34,8 +32,8 @@ public class Crawler extends CrawlerObject {
             List<String> ariaLandmarks = this.loadAriaLandmarks();
             List<HTML5Tag> html5Tags = this.loadHtml5Tags();
 
-            WebDriverManager.chromedriver().setup();
-            WebDriver webDriver = WebDriverBuilder.buildChromeDriver(true, WebDriverBuilder.LANGUAGE_EN_US);
+            WebDriverManager.firefoxdriver().setup();
+            WebDriver webDriver = WebDriverBuilder.buildFirefoxDriver(true);
 
             return this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
         } catch (Exception e) {
@@ -96,7 +94,9 @@ public class Crawler extends CrawlerObject {
             this.scanSiteForLandmarks(webPage, ariaLandmarks, webDriver);
             this.scanSiteForHTML5Tags(webPage, ariaLandmarks, webDriver);
 
-            this.logWebPage(webPage);
+            Log.logWebPage(webPage, log);
+
+            Sceenshot.printscr(webDriver);
 
             return true;
         } catch (Exception e) {
