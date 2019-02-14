@@ -9,6 +9,14 @@ import java.util.List;
 public class DomElement extends CrawlerObject {
     private String id;
     private String tagName;
+    private String role;
+    private int posX;
+    private int posY;
+    private int height;
+    private int width;
+    private boolean displayed;
+    private boolean enabled;
+
     private WebElement webElement;
     private List<DomElement> children;
     private String ariaLandmark;
@@ -17,6 +25,12 @@ public class DomElement extends CrawlerObject {
     public DomElement() {
         super();
         this.children = new ArrayList<>();
+        this.posX = Integer.MAX_VALUE;
+        this.posY = Integer.MAX_VALUE;
+        this.height = Integer.MAX_VALUE;
+        this.width = Integer.MAX_VALUE;
+        this.displayed = false;
+        this.enabled = false;
     }
 
     public void addChild(DomElement e) {
@@ -33,52 +47,28 @@ public class DomElement extends CrawlerObject {
         return tagName;
     }
 
-    public String getRole() {
-        if(this.webElement != null) {
-            return this.webElement.getAttribute("role");
-        } else {
-            return "";
-        }
-    }
-
     public int getX() {
-        if(this.webElement != null) {
-            return this.webElement.getLocation().getX();
-        } else {
-            return Integer.MIN_VALUE;
-        }
+        return this.getPosX();
     }
 
     public int getY() {
-        if(this.webElement != null) {
-            return this.webElement.getLocation().getY();
-        } else {
-            return Integer.MIN_VALUE;
-        }
+        return this.getPosY();
     }
 
     public int getHeight() {
-        if(this.webElement != null) {
-            return this.webElement.getSize().getHeight();
-        } else {
-            return Integer.MIN_VALUE;
-        }
+        return this.height;
     }
 
     public int getWidth() {
-        if(this.webElement != null) {
-            return this.webElement.getSize().getWidth();
-        } else {
-            return Integer.MIN_VALUE;
-        }
+        return this.width;
     }
 
     public boolean isDisplayed() {
-        return this.webElement != null && this.webElement.isDisplayed();
+        return this.displayed;
     }
 
     public boolean isEnabled() {
-        return this.webElement != null && this.webElement.isEnabled();
+        return this.enabled;
     }
 
     public String getText() {
@@ -111,6 +101,15 @@ public class DomElement extends CrawlerObject {
 
     public void setWebElement(WebElement webElement) {
         this.webElement = webElement;
+        this.id = webElement.getAttribute("id");
+        this.tagName = webElement.getTagName();
+        this.posX = webElement.getLocation().getX();
+        this.posY = webElement.getLocation().getY();
+        this.height = webElement.getSize().getHeight();
+        this.width = webElement.getSize().getWidth();
+        this.displayed = webElement.isDisplayed();
+        this.enabled = webElement.isEnabled();
+        this.role = webElement.getAttribute("role");
     }
 
     public List<DomElement> getChildren() {
@@ -137,4 +136,35 @@ public class DomElement extends CrawlerObject {
         this.html5Tag = html5Tag;
     }
 
+    public int getPosX() {
+        return posX;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public int getPosY() {
+        return posY;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

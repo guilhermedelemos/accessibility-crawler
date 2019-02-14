@@ -35,11 +35,20 @@ public class Crawler extends CrawlerObject {
             WebDriverManager.firefoxdriver().setup();
             WebDriver webDriver = WebDriverBuilder.buildFirefoxDriver(true);
 
-            return this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
+            List<WebPage> webPages = this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
+
+            DatasetCSVStrategy dataset = new DatasetCSVStrategy();
+            boolean datasetCreated = dataset.createDataset(webPages, "dataset.csv");
+            if(datasetCreated) {
+                log.info("Dataset created");
+            } else {
+                log.info("Erro ao criar o dataset");
+            }
         } catch (Exception e) {
             log.error("Error processing sites", e);
             return false;
         }
+        return true;
     }
 
     public List<String> loadAriaLandmarks() {
@@ -59,22 +68,27 @@ public class Crawler extends CrawlerObject {
         return HTML5TagBuilder.buildTags();
     }
 
-    public boolean scanSites(List<Site> sites, WebDriver webDriver, List<String> ariaLandmarks, List<HTML5Tag> html5Tags) {
+    public List<WebPage> scanSites(List<Site> sites, WebDriver webDriver, List<String> ariaLandmarks, List<HTML5Tag> html5Tags) {
         try {
+            List<WebPage> webPages = new ArrayList<>();
             boolean result = true;
             Iterator<Site> it = sites.iterator();
             while (it.hasNext()) {
                 Site site = it.next();
-                result = (this.scanSite(new URL(site.getUrl()), webDriver, ariaLandmarks, html5Tags)) ? result : false;
+                WebPage webPage = this.scanSite(new URL(site.getUrl()), webDriver, ariaLandmarks, html5Tags);
+                if(webPage != null) {
+                    webPages.add(webPage);
+                }
+//                result = (this.scanSite(new URL(site.getUrl()), webDriver, ariaLandmarks, html5Tags)) ? result : false;
             }
-            return result;
+            return webPages;
         } catch (Exception e) {
             log.error("Error scanning sites", e);
-            return false;
+            return new ArrayList<>();
         }
     }
 
-    public boolean scanSite(URL site, WebDriver webDriver, List<String> ariaLandmarks, List<HTML5Tag> html5Tags) {
+    public WebPage scanSite(URL site, WebDriver webDriver, List<String> ariaLandmarks, List<HTML5Tag> html5Tags) {
         try {
             WebPage webPage = this.getWebPageMetadata(site);
 
@@ -84,7 +98,7 @@ public class Crawler extends CrawlerObject {
 
             if (!this.siteIsValid(webPage)) {
                 log.info("Invalid site skipped.");
-                return false;
+                return null;
             }
 
             webDriver.get(webPage.getUrl());
@@ -98,10 +112,10 @@ public class Crawler extends CrawlerObject {
 
             Sceenshot.printscr(webDriver);
 
-            return true;
+            return webPage;
         } catch (Exception e) {
             log.error("Error scanning sites", e);
-            return false;
+            return null;
         }
     }
 
