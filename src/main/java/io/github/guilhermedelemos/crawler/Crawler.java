@@ -92,7 +92,7 @@ public class Crawler extends CrawlerObject {
             log.info(new StringBuilder().append("URL after request: ").append(webPage.getUrlAfterRequest()).toString());
 
             this.scanSiteForLandmarks(webPage, ariaLandmarks, webDriver);
-            this.scanSiteForHTML5Tags(webPage, ariaLandmarks, webDriver);
+            this.scanSiteForHTML5Tags(webPage, html5Tags, webDriver);
 
             Log.logWebPage(webPage, log);
 
@@ -138,7 +138,18 @@ public class Crawler extends CrawlerObject {
         }
     }
 
-    public boolean scanSiteForHTML5Tags(WebPage webPage, List<String> ariaLandmarks, WebDriver webDriver) {
+    public boolean scanSiteForHTML5Tags(WebPage webPage, List<HTML5Tag> html5Tags, WebDriver webDriver) {
+        if(webPage == null || html5Tags == null || webDriver == null) {
+            return false;
+        }
+
+        int count = 0;
+        Iterator<HTML5Tag> it = html5Tags.iterator();
+        while (it.hasNext()) {
+            HTML5Tag tag = it.next();
+
+        }
+
         return false;
     }
 
