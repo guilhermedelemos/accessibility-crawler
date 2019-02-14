@@ -9,3 +9,7 @@ out/
 
 # Log
 *.log
+
+# Outros
+.~lock*
+*.csv
