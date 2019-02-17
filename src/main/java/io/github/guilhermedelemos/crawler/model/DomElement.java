@@ -16,8 +16,6 @@ public class DomElement extends CrawlerObject {
     private int width;
     private boolean displayed;
     private boolean enabled;
-
-    private WebElement webElement;
     private List<DomElement> children;
     private String ariaLandmark;
     private String html5Tag;
@@ -71,13 +69,6 @@ public class DomElement extends CrawlerObject {
         return this.enabled;
     }
 
-    public String getText() {
-        if(this.webElement != null) {
-            return this.webElement.getText();
-        } else {
-            return "";
-        }
-    }
 
     /**
      * Calculated.
@@ -95,12 +86,7 @@ public class DomElement extends CrawlerObject {
         this.tagName = tagName;
     }
 
-    public WebElement getWebElement() {
-        return webElement;
-    }
-
     public void setWebElement(WebElement webElement) {
-        this.webElement = webElement;
         this.id = webElement.getAttribute("id");
         this.tagName = webElement.getTagName();
         this.posX = webElement.getLocation().getX();

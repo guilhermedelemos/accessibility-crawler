@@ -32,8 +32,8 @@ public class Crawler extends CrawlerObject {
             List<String> ariaLandmarks = this.loadAriaLandmarks();
             List<HTML5Tag> html5Tags = this.loadHtml5Tags();
 
-            WebDriverManager.firefoxdriver().setup();
-            WebDriver webDriver = WebDriverBuilder.buildFirefoxDriver(true);
+//            WebDriver webDriver = WebDriverBuilder.buildFirefoxDriver(true);
+            WebDriver webDriver = WebDriverBuilder.buildChromeDriver(true, WebDriverBuilder.LANGUAGE_EN_US);
 
             List<WebPage> webPages = this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
 
@@ -138,7 +138,7 @@ public class Crawler extends CrawlerObject {
                         domElement.setWebElement(targetElement);
                         domElement.setAriaLandmark(landmark);
                         webPage.addElement(domElement);
-                        this.extractElements(domElement);
+                        this.extractElements(domElement, targetElement);
                     }
                 }
             }
@@ -188,17 +188,18 @@ public class Crawler extends CrawlerObject {
         return site.getHttpStatusCode() != 404;
     }
 
-    public void extractElements(DomElement element) {
-        this.extractElements(element, 0);
+    public void extractElements(DomElement element, WebElement webElement) {
+        this.extractElements(element, webElement,0);
     }
 
-    public void extractElements(DomElement element, int level) {
+    public void extractElements(DomElement element, WebElement webElement, int level) {
         if (element == null) {
             return;
         }
 //        Log.logWebElement(element.getWebElement(), level, log);
         //subElements
-        List<WebElement> children = element.getWebElement().findElements(By.xpath(".//*"));
+        int count = 1;
+        List<WebElement> children = webElement.findElements(By.xpath(".//*"));
         Iterator<WebElement> it = children.iterator();
         while (it.hasNext()) {
             WebElement targetElement = it.next();
@@ -209,7 +210,11 @@ public class Crawler extends CrawlerObject {
             domElement.setAriaLandmark(element.getAriaLandmark());
             domElement.setHtml5Tag(element.getHtml5Tag());
             element.addChild(domElement);
-            this.extractElements(domElement, level + 1);
+
+            StringBuilder logLine = new StringBuilder();
+            logLine.append("Extracting child (").append(count++).append("/").append(children.size()).append("): ").append(domElement.getTagName());
+            log.info(logLine.toString());
+            this.extractElements(domElement, targetElement, level + 1);
         }
     }
 

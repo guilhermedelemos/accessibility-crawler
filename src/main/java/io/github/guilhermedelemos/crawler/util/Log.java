@@ -52,7 +52,6 @@ public class Log {
             log.info(String.format(LOG_PARAMS2, Messages.LOG_WIDTH, element.getWidth()));
             log.info(String.format(LOG_PARAMS2, Messages.LOG_DISPLAYED, element.isDisplayed()));
             log.info(String.format(LOG_PARAMS2, Messages.LOG_ENABLED, element.isEnabled()));
-            log.info(String.format(LOG_PARAMS2, Messages.LOG_TEXT, element.getText()));
         });
     }
 

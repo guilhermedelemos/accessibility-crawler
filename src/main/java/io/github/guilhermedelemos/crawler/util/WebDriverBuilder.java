@@ -1,5 +1,6 @@
 package io.github.guilhermedelemos.crawler.util;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -27,6 +28,7 @@ public class WebDriverBuilder extends CrawlerObject {
     }
 
     public static WebDriver buildChromeDriver(boolean headless, String language) {
+        WebDriverManager.chromedriver().setup();
         ChromeOptions chromeOptions = new ChromeOptions();
         if(headless) {
             chromeOptions.addArguments("headless");
@@ -44,6 +46,7 @@ public class WebDriverBuilder extends CrawlerObject {
     }
 
     public static WebDriver buildFirefoxDriver(boolean headless) {
+        WebDriverManager.firefoxdriver().setup();
         FirefoxOptions options = new FirefoxOptions();
         options.setHeadless(headless);
         return new FirefoxDriver(options);
