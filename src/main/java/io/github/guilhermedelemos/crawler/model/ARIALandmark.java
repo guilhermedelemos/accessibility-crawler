@@ -4,6 +4,15 @@ import io.github.guilhermedelemos.crawler.util.CrawlerObject;
 
 public class ARIALandmark extends CrawlerObject {
 
+    public static final String ARIA_BANNER = "banner";
+    public static final String ARIA_COMPLEMENTARY = "complementary";
+    public static final String ARIA_CONTENTINFO = "contentinfo";
+    public static final String ARIA_FORM = "form";
+    public static final String ARIA_MAIN = "main";
+    public static final String ARIA_NAVIGATION = "navigation";
+    public static final String ARIA_REGION = "region";
+    public static final String ARIA_SEARCH = "search";
+
     private int datasetClass;
     private String role;
 

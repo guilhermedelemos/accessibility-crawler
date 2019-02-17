@@ -84,7 +84,11 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.getId()).append(COLUMN_SEPARATOR);
             line.append(domElement.getTagName()).append(COLUMN_SEPARATOR);
             line.append(domElement.getChildren().size()).append(COLUMN_SEPARATOR);
-            line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
+            if(domElement.getAriaLandmark() == null) {
+                line.append(0).append(COLUMN_SEPARATOR);
+            } else {
+                line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
+            }
             line.append(domElement.getHtml5Tag()).append(COLUMN_SEPARATOR);
 //            line.append("XPATH").append(COLUMN_SEPARATOR);
             line.append(domElement.getPosX()).append(COLUMN_SEPARATOR);
