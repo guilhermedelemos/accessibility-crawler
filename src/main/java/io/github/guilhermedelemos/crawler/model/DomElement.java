@@ -17,7 +17,7 @@ public class DomElement extends CrawlerObject {
     private boolean displayed;
     private boolean enabled;
     private List<DomElement> children;
-    private String ariaLandmark;
+    private ARIALandmark ariaLandmark;
     private String html5Tag;
 
     public DomElement() {
@@ -106,11 +106,11 @@ public class DomElement extends CrawlerObject {
         this.children = children;
     }
 
-    public String getAriaLandmark() {
+    public ARIALandmark getAriaLandmark() {
         return ariaLandmark;
     }
 
-    public void setAriaLandmark(String ariaLandmark) {
+    public void setAriaLandmark(ARIALandmark ariaLandmark) {
         this.ariaLandmark = ariaLandmark;
     }
 

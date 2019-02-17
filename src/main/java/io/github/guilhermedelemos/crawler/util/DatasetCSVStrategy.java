@@ -34,7 +34,8 @@ public class DatasetCSVStrategy extends DatasetStrategy {
 
 //        Files.write(Paths.get("c:/output.txt"), content.getBytes());
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;xpath;posX;posY;height;width;visivel;habilitado;area;classe");
+//            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;xpath;posX;posY;height;width;visivel;habilitado;area;classe");
+            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
             writer.newLine();
 
             Iterator<WebPage> it = webPages.iterator();
@@ -83,9 +84,9 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.getId()).append(COLUMN_SEPARATOR);
             line.append(domElement.getTagName()).append(COLUMN_SEPARATOR);
             line.append(domElement.getChildren().size()).append(COLUMN_SEPARATOR);
-            line.append(domElement.getAriaLandmark()).append(COLUMN_SEPARATOR);
+            line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
             line.append(domElement.getHtml5Tag()).append(COLUMN_SEPARATOR);
-            line.append("XPATH").append(COLUMN_SEPARATOR);
+//            line.append("XPATH").append(COLUMN_SEPARATOR);
             line.append(domElement.getPosX()).append(COLUMN_SEPARATOR);
             line.append(domElement.getPosY()).append(COLUMN_SEPARATOR);
             line.append(domElement.getHeight()).append(COLUMN_SEPARATOR);
@@ -93,7 +94,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.isDisplayed()).append(COLUMN_SEPARATOR);
             line.append(domElement.isEnabled()).append(COLUMN_SEPARATOR);
             line.append(domElement.getArea()).append(COLUMN_SEPARATOR);
-            line.append("CLASSE").append(COLUMN_SEPARATOR);
+            line.append(domElement.getAriaLandmark().getDatasetClass()).append(COLUMN_SEPARATOR);
 
             writer.write(line.toString());
             writer.newLine();
