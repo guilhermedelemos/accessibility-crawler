@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'jacoco'
     id "org.sonarqube" version "2.7"
+    // id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
 repositories {
@@ -32,3 +33,11 @@ sonarqube {
 }
 
 mainClassName = 'io.github.guilhermedelemos.crawler.Application'
+
+jar {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+}
+
+
