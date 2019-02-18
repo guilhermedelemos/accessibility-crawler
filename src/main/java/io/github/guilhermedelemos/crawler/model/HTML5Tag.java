@@ -24,13 +24,15 @@ public class HTML5Tag extends CrawlerObject {
     private boolean ariaLabel;
     private boolean title;
     private String role;
+    private int datasetClass;
+    private String ARIAEquivalent;
 
     public HTML5Tag() {
         super();
         this.ariaLabelledby = false;
     }
 
-    public HTML5Tag(String tag, String context, List<String> invalidElements, boolean ariaLabelledby, boolean ariaLabel, boolean title, String role) {
+    public HTML5Tag(String tag, String context, List<String> invalidElements, boolean ariaLabelledby, boolean ariaLabel, boolean title, String role, int datasetClass, String ARIAEquivalent) {
         this.tag = tag;
         this.context = context;
         this.invalidElements = invalidElements;
@@ -38,6 +40,8 @@ public class HTML5Tag extends CrawlerObject {
         this.ariaLabel = ariaLabel;
         this.title = title;
         this.role = role;
+        this.datasetClass = datasetClass;
+        this.ARIAEquivalent = ARIAEquivalent;
     }
 
     public String getTag() {
@@ -94,6 +98,22 @@ public class HTML5Tag extends CrawlerObject {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public int getDatasetClass() {
+        return datasetClass;
+    }
+
+    public void setDatasetClass(int datasetClass) {
+        this.datasetClass = datasetClass;
+    }
+
+    public String getARIAEquivalent() {
+        return ARIAEquivalent;
+    }
+
+    public void setARIAEquivalent(String ARIAEquivalent) {
+        this.ARIAEquivalent = ARIAEquivalent;
     }
 
 }

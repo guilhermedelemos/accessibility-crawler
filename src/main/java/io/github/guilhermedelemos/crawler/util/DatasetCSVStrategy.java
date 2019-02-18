@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +18,37 @@ public class DatasetCSVStrategy extends DatasetStrategy {
     public static final String COLUMN_SEPARATOR = ";";
 
     private int counter;
+
+    public boolean createDataset(WebPage webPage) {
+        if(webPage == null) {
+            return false;
+        }
+
+        String file = "dataset_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv";
+        Path path = Paths.get(file);
+        try {
+            if(Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch(IOException e) {
+            log.error("Erro ao deletar o arquivo do dataset", e);
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
+            writer.newLine();
+
+            Iterator<DomElement> itDom = webPage.getElements().iterator();
+            while (itDom.hasNext()) {
+                DomElement domElement = itDom.next();
+                this.writeDomElementRecursive(webPage, domElement, writer);
+            }
+        } catch(IOException e) {
+            log.error("Erro ao criar o arquivo do dataset: " + file, e);
+        }
+
+        return true;
+    }
 
     @Override
     public boolean createDataset(List<WebPage> webPages, String outputFile) {
@@ -32,31 +65,25 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             log.error("Erro ao deletar o arquivo do dataset", e);
         }
 
-//        Files.write(Paths.get("c:/output.txt"), content.getBytes());
-        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-//            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;xpath;posX;posY;height;width;visivel;habilitado;area;classe");
-            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
-            writer.newLine();
+//        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+//            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
+//            writer.newLine();
 
             Iterator<WebPage> it = webPages.iterator();
             while (it.hasNext()) {
                 WebPage webPage = it.next();
 
-                Iterator<DomElement> itDom = webPage.getElements().iterator();
-                while (itDom.hasNext()) {
-                    DomElement domElement = itDom.next();
-                    this.writeDomElementRecursive(webPage, domElement, writer);
-//                    this.writeDomElement(webPage, domElement, writer);
-//
-//                    Iterator<DomElement> itDomChildren = domElement.getChildren().iterator();
-//                    while(itDomChildren.hasNext()) {
-//                        this.writeDomElement(webPage, itDomChildren.next(), writer);
-//                    }
-                }
+                this.createDataset(webPage);
+
+//                Iterator<DomElement> itDom = webPage.getElements().iterator();
+//                while (itDom.hasNext()) {
+//                    DomElement domElement = itDom.next();
+//                    this.writeDomElementRecursive(webPage, domElement, writer);
+//                }
             }
-        } catch(IOException e) {
-            log.error("Erro ao criar o arquivo do dataset", e);
-        }
+//        } catch(IOException e) {
+//            log.error("Erro ao criar o arquivo do dataset", e);
+//        }
         return true;
     }
 
@@ -98,7 +125,8 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.isDisplayed()).append(COLUMN_SEPARATOR);
             line.append(domElement.isEnabled()).append(COLUMN_SEPARATOR);
             line.append(domElement.getArea()).append(COLUMN_SEPARATOR);
-            line.append(domElement.getAriaLandmark().getDatasetClass()).append(COLUMN_SEPARATOR);
+//            line.append(domElement.getAriaLandmark().getDatasetClass()).append(COLUMN_SEPARATOR);
+            line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
 
             writer.write(line.toString());
             writer.newLine();

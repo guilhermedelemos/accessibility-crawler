@@ -6,7 +6,9 @@ import org.openqa.selenium.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class Crawler extends CrawlerObject {
             List<WebPage> webPages = this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
 
             DatasetCSVStrategy dataset = new DatasetCSVStrategy();
-            boolean datasetCreated = dataset.createDataset(webPages, "dataset.csv");
+            boolean datasetCreated = dataset.createDataset(webPages, "dataset"+new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date())+".csv");
             if(datasetCreated) {
                 log.info("Dataset created");
             } else {
@@ -71,6 +73,12 @@ public class Crawler extends CrawlerObject {
                 WebPage webPage = this.scanSite(new URL(site.getUrl()), webDriver, ariaLandmarks, html5Tags);
                 if(webPage != null) {
                     webPages.add(webPage);
+//                    DatasetCSVStrategy dataset = new DatasetCSVStrategy();
+//                    boolean datasetCreated = dataset.createDataset(webPage);
+                    DatasetBuilder datasetThread = new DatasetBuilder();
+                    datasetThread.setWebPage(webPage);
+                    datasetThread.setLog(log);
+                    datasetThread.start();
                 }
             }
             return webPages;
@@ -99,7 +107,7 @@ public class Crawler extends CrawlerObject {
             log.info(new StringBuilder().append(LOG_URL_AFTER_REQUEST).append(webPage.getUrlAfterRequest()).toString());
 
             this.scanSiteForLandmarks(webPage, ariaLandmarks, webDriver);
-            this.scanSiteForHTML5Tags(webPage, html5Tags, webDriver);
+//            this.scanSiteForHTML5Tags(webPage, html5Tags, webDriver);
 
             Log.logWebPage(webPage, log);
 
@@ -153,10 +161,82 @@ public class Crawler extends CrawlerObject {
         int count = 0;
         Iterator<HTML5Tag> it = html5Tags.iterator();
         while (it.hasNext()) {
-            HTML5Tag tag = it.next();
+            HTML5Tag target = it.next();
+            List<WebElement> elements;
+
+            switch(target.getARIAEquivalent()) {
+                case ARIALandmark.ARIA_BANNER:
+                    log.info("Finding HTML5 equivalent to ARIA banner");
+                    if(!HTML5TagValidator.validateBanner(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_COMPLEMENTARY:
+                    log.info("Finding HTML5 equivalent to ARIA complementary");
+                    if(!HTML5TagValidator.validateComplementary(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_CONTENTINFO:
+                    log.info("Finding HTML5 equivalent to ARIA contentinfo");
+                    if(!HTML5TagValidator.validateContentinfo(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_FORM:
+                    log.info("Finding HTML5 equivalent to ARIA form");
+                    if(!HTML5TagValidator.validateForm(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_MAIN:
+                    log.info("Finding HTML5 equivalent to ARIA main");
+                    if(!HTML5TagValidator.validateMain(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_NAVIGATION:
+                    log.info("Finding HTML5 equivalent to ARIA navigation");
+                    if(!HTML5TagValidator.validateNavigation(target)) {
+                        continue;
+                    }
+                    elements = webDriver.findElements(By.tagName(target.getTag()));
+                    break;
+                case ARIALandmark.ARIA_REGION:
+                    log.info("Finding HTML5 equivalent to ARIA region");
+                    if(!HTML5TagValidator.validateRegion(target)) {
+                        continue;
+                    }
+                    if(target.getTag() == null) {
+                        elements = webDriver.findElements(By.cssSelector(new StringBuilder().append("[role=").append(target.getRole()).append("]").toString()));
+                    } else {
+                        elements = webDriver.findElements(By.tagName(target.getTag()));
+                    }
+                    break;
+                default:
+                    log.error("HTML5 tag without ARIA equivalent");
+                    elements = new ArrayList<>();
+                    break;
+            }
+
+            Iterator<WebElement> itWe = elements.iterator();
+            while (itWe.hasNext()) {
+                WebElement targetElement = itWe.next();
+                DomElement domElement = new DomElement();
+                domElement.setId(targetElement.getAttribute("id"));
+                domElement.setTagName(targetElement.getTagName());
+                domElement.setWebElement(targetElement);
+                domElement.setHtml5Tag(target);
+                webPage.addElement(domElement);
+                this.extractElements(domElement, targetElement);
+            }
 
         }
-
         return false;
     }
 
