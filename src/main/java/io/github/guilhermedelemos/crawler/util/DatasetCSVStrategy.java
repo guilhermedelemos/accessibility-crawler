@@ -26,13 +26,14 @@ public class DatasetCSVStrategy extends DatasetStrategy {
 
         String file = "dataset_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv";
         Path path = Paths.get(file);
-        try {
-            if(Files.exists(path)) {
-                Files.delete(path);
-            }
-        } catch(IOException e) {
-            log.error("Erro ao deletar o arquivo do dataset", e);
-        }
+        this.deleteFile(file);
+//        try {
+//            if(Files.exists(path)) {
+//                Files.delete(path);
+//            }
+//        } catch(IOException e) {
+//            log.error("Erro ao deletar o arquivo do dataset", e);
+//        }
 
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
@@ -58,13 +59,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
         }
         log.info("Criando dataset");
 
-        Path path = Paths.get(outputFile);
-        try {
-            Files.delete(path);
-        } catch(IOException e) {
-            log.error("Erro ao deletar o arquivo do dataset", e);
-        }
-
+        this.deleteFile(outputFile);
 //        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
 //            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
 //            writer.newLine();
@@ -134,5 +129,18 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             log.error("Erro ao escrever no arquivo do dataset", e);
         }
         this.counter++;
+    }
+
+    public boolean deleteFile(String file) {
+        Path path = Paths.get(file);
+        try {
+            if(Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch(IOException e) {
+            log.error("Erro ao deletar o arquivo do dataset", e);
+            return false;
+        }
+        return true;
     }
 }
