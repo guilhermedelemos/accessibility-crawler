@@ -19,7 +19,25 @@ public class Application extends CrawlerObject {
 
     public static void main(String[] args) {
         Application app = new Application();
-        app.execute();
+//        app.execute();
+        app.executeWithJavaScript();
+    }
+
+    public void executeWithJavaScript() {
+        log.info(GREETING);
+
+        List<Site> sites = this.loadSites(true);
+
+        Crawler crawler = new Crawler();
+        boolean execucao = crawler.executeJavascript(sites);
+
+        if(execucao) {
+            log.info("Success");
+        } else {
+            log.info("Failure");
+        }
+
+        log.info(FAREWELL);
     }
 
     public void execute() {
@@ -65,12 +83,12 @@ public class Application extends CrawlerObject {
 
         if(unique) {
             Set<Site> setSites = new LinkedHashSet<>();
-            setSites.addAll(controlSitesAria);
+//            setSites.addAll(controlSitesAria);
 //            setSites.addAll(controlSitesHTML5);
 //            setSites.addAll(alexaSites);
 //            setSites.addAll(alexaSitesBrazil);
 //            setSites.addAll(alexaSitesUsa);
-//            setSites.addAll(sample);
+            setSites.addAll(sample);
             sites.addAll(setSites);
         } else {
             sites.addAll(controlSitesAria);
