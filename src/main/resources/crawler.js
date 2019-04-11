@@ -54,20 +54,22 @@ class SearchSample {
 
 class AccessibilityCrawler {
 
-    execute(landmarks) {
-        console.log('INICIO');
+    execute(landmarks, json = true) {
         let result = [];
         let counter = 0;
         for (let landmark of landmarks) {
-            console.log('LANDMARK', landmark);
+            // console.log('LANDMARK', landmark);
             let elements = document.querySelectorAll(`[role="${landmark}"]`);
             if (elements.length < 1) {
                 continue;
             }
-            result.push(this.scanElements(elements, landmark));
+            result.push(...this.scanElements(elements, landmark));
         }
-        console.log('FIM');
-        return result;
+        if (json) {
+            return this.toJSON(result);
+        } else {
+            return result;
+        }
     }
 
     scanElements(elements, landmark) {
@@ -76,14 +78,11 @@ class AccessibilityCrawler {
         }
         let result = [];
         for (let element of elements) {
-            // result.push(this.buildSample(element));
-            // console.log('scan', element);
             let sample = this.buildSample(element, landmark);
             result.push(sample);
-            console.log("sample", sample);
+            // console.log("sample", sample);
             if (element.children.length > 0) {
-                let children = this.scanElements(element.children);
-                result.push(...children);
+                result.push(...this.scanElements(element.children));
             }
         }
         return result;
@@ -129,9 +128,9 @@ class AccessibilityCrawler {
         return JSON.stringify(obj);
     }
 }
-let crawler = new AccessibilityCrawler();
-let landmarks = crawler.searchAriaLandmarks(ARIA_LANDMARKS);
-console.log('Landmarks', landmarks);
+// let crawler = new AccessibilityCrawler();
+// let landmarks = crawler.searchAriaLandmarks(ARIA_LANDMARKS);
+// console.log('Landmarks', landmarks);
 
-let samples = crawler.execute(ARIA_LANDMARKS);
-console.log('Samples', samples);
+// let samples = crawler.execute(ARIA_LANDMARKS, false);
+// console.log('Samples', samples);
