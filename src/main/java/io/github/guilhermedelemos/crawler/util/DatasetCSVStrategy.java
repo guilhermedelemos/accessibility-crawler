@@ -43,7 +43,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             Iterator<JSONObject> it = jsonSamples.iterator();
             while (it.hasNext()) {
                 JSONObject sample = it.next();
-                log.info("Sample " + sample);
+//                log.info("Sample " + sample);
                 StringBuilder line = new StringBuilder();
                 line.append(count).append(COLUMN_SEPARATOR);
                 line.append(sample.getString("url")).append(COLUMN_SEPARATOR);
