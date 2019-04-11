@@ -62,7 +62,8 @@ class AccessibilityCrawler {
             if (elements.length < 1) {
                 continue;
             }
-            result.push(...this.scanElements(elements, landmark));
+            let scanResult = this.scanElements(elements, landmark);
+            result.push(...scanResult);
         }
         if (json) {
             return this.toJSON(result);
@@ -80,7 +81,7 @@ class AccessibilityCrawler {
             let sample = this.buildSample(element, landmark);
             result.push(sample);
             if (element.children.length > 0) {
-                result.push(...this.scanElements(element.children));
+                result.push(...this.scanElements(element.children, landmark));
             }
         }
         return result;

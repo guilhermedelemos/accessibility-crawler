@@ -72,7 +72,15 @@ public class DatasetCSVStrategy extends DatasetStrategy {
     }
 
     public String getJSONValue(JSONObject obj, String key) {
-        if(obj == null || key == null || key.isEmpty() || obj.isEmpty() || obj.get(key) == JSONObject.NULL) {
+        if(obj == null || key == null || key.isEmpty() || obj.isEmpty() ) {
+            return "null";
+        }
+        if(
+            (key.equals("qtdeFilhos") || key.equals("posX") || key.equals("posY") || key.equals("height") || key.equals("width") || key.equals("area"))
+            && obj.get(key) == JSONObject.NULL
+            ) {
+            return "0";
+        } else if(obj.get(key) == JSONObject.NULL) {
             return "null";
         }
         return obj.get(key).toString();

@@ -5,3 +5,12 @@
 ## Execute
 * Run `./gradlew run`
 * Test `./gradlew test`
+
+## JavaScript
+* var script = document.createElement('script');
+* script.type = 'text/javascript';
+* script.src = 'https://guilhermedelemos.github.io/accessible/examples/crawler.js';
+* document.head.appendChild(script);
+* let crawler = new AccessibilityCrawler();
+* crawler.searchAriaLandmarks(ARIA_LANDMARKS, false);
+* crawler.execute(ARIA_LANDMARKS, false);
