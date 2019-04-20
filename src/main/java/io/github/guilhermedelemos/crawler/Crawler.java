@@ -69,11 +69,13 @@ public class Crawler extends CrawlerObject {
         }
 
         // #3 Scan
+        long sitesTotal = sites.size();
         long startTimeScan = System.currentTimeMillis();
         List<JSONObject> samples = new ArrayList<>();
-        sites.stream().forEach(site -> {
+        for (int i = 0; i < sites.size(); i++) {
+            Site site = sites.get(i);
             long startSiteScan = System.currentTimeMillis();
-            log.info("Varrendo " + site.getUrl());
+            log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
             webDriver.get(site.getUrl());
 
             Object retorno = js
@@ -84,21 +86,21 @@ public class Crawler extends CrawlerObject {
             } else {
                 JSONArray jsonArray = new JSONArray(retorno.toString());
                 log.info(jsonArray.length() + " samples extracted");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    samples.add(jsonArray.getJSONObject(i));
-//                    JSONObject jsonObj = jsonArray.getJSONObject(i);
-//                    log.info("sample: " + jsonObj.toString());
+                for (int j = 0; j < jsonArray.length(); j++) {
+                    samples.add(jsonArray.getJSONObject(j));
+                    // JSONObject jsonObj = jsonArray.getJSONObject(i);
+                    // log.info("sample: " + jsonObj.toString());
                 }
             }
             long endSiteScan = System.currentTimeMillis();
             log.info("Tempo para varrer o site: " + (endSiteScan - startSiteScan));
-        });
+        }
 
         // #4 Build dataset
         log.info("Criando dataset");
         DatasetCSVStrategy dataset = new DatasetCSVStrategy();
         boolean datasetCreated = dataset.createDataset(samples, "");
-        if(!datasetCreated) {
+        if (!datasetCreated) {
             log.info("Erro ao criar o dataset");
         }
 
@@ -143,14 +145,15 @@ public class Crawler extends CrawlerObject {
 
             List<WebPage> webPages = this.scanSites(sites, webDriver, ariaLandmarks, html5Tags);
 
-//            DatasetCSVStrategy dataset = new DatasetCSVStrategy();
-//            boolean datasetCreated = dataset.createDataset(webPages,
-//                    "dataset" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv");
-//            if (datasetCreated) {
-//                log.info("Dataset created");
-//            } else {
-//                log.info("Erro ao criar o dataset");
-//            }
+            // DatasetCSVStrategy dataset = new DatasetCSVStrategy();
+            // boolean datasetCreated = dataset.createDataset(webPages,
+            // "dataset" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) +
+            // ".csv");
+            // if (datasetCreated) {
+            // log.info("Dataset created");
+            // } else {
+            // log.info("Erro ao criar o dataset");
+            // }
         } catch (Exception e) {
             log.error("Error processing sites", e);
             return false;
@@ -168,7 +171,7 @@ public class Crawler extends CrawlerObject {
     }
 
     public List<WebPage> scanSites(List<Site> sites, WebDriver webDriver, List<ARIALandmark> ariaLandmarks,
-                                   List<HTML5Tag> html5Tags) {
+            List<HTML5Tag> html5Tags) {
         try {
             List<WebPage> webPages = new ArrayList<>();
             Iterator<Site> it = sites.iterator();
@@ -271,64 +274,64 @@ public class Crawler extends CrawlerObject {
             List<WebElement> elements;
 
             switch (target.getARIAEquivalent()) {
-                case ARIALandmark.ARIA_BANNER:
-                    log.info("Finding HTML5 equivalent to ARIA banner");
-                    if (!HTML5TagValidator.validateBanner(target)) {
-                        continue;
-                    }
+            case ARIALandmark.ARIA_BANNER:
+                log.info("Finding HTML5 equivalent to ARIA banner");
+                if (!HTML5TagValidator.validateBanner(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_COMPLEMENTARY:
+                log.info("Finding HTML5 equivalent to ARIA complementary");
+                if (!HTML5TagValidator.validateComplementary(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_CONTENTINFO:
+                log.info("Finding HTML5 equivalent to ARIA contentinfo");
+                if (!HTML5TagValidator.validateContentinfo(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_FORM:
+                log.info("Finding HTML5 equivalent to ARIA form");
+                if (!HTML5TagValidator.validateForm(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_MAIN:
+                log.info("Finding HTML5 equivalent to ARIA main");
+                if (!HTML5TagValidator.validateMain(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_NAVIGATION:
+                log.info("Finding HTML5 equivalent to ARIA navigation");
+                if (!HTML5TagValidator.validateNavigation(target)) {
+                    continue;
+                }
+                elements = webDriver.findElements(By.tagName(target.getTag()));
+                break;
+            case ARIALandmark.ARIA_REGION:
+                log.info("Finding HTML5 equivalent to ARIA region");
+                if (!HTML5TagValidator.validateRegion(target)) {
+                    continue;
+                }
+                if (target.getTag() == null) {
+                    elements = webDriver.findElements(By.cssSelector(
+                            new StringBuilder().append("[role=").append(target.getRole()).append("]").toString()));
+                } else {
                     elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_COMPLEMENTARY:
-                    log.info("Finding HTML5 equivalent to ARIA complementary");
-                    if (!HTML5TagValidator.validateComplementary(target)) {
-                        continue;
-                    }
-                    elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_CONTENTINFO:
-                    log.info("Finding HTML5 equivalent to ARIA contentinfo");
-                    if (!HTML5TagValidator.validateContentinfo(target)) {
-                        continue;
-                    }
-                    elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_FORM:
-                    log.info("Finding HTML5 equivalent to ARIA form");
-                    if (!HTML5TagValidator.validateForm(target)) {
-                        continue;
-                    }
-                    elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_MAIN:
-                    log.info("Finding HTML5 equivalent to ARIA main");
-                    if (!HTML5TagValidator.validateMain(target)) {
-                        continue;
-                    }
-                    elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_NAVIGATION:
-                    log.info("Finding HTML5 equivalent to ARIA navigation");
-                    if (!HTML5TagValidator.validateNavigation(target)) {
-                        continue;
-                    }
-                    elements = webDriver.findElements(By.tagName(target.getTag()));
-                    break;
-                case ARIALandmark.ARIA_REGION:
-                    log.info("Finding HTML5 equivalent to ARIA region");
-                    if (!HTML5TagValidator.validateRegion(target)) {
-                        continue;
-                    }
-                    if (target.getTag() == null) {
-                        elements = webDriver.findElements(By.cssSelector(
-                                new StringBuilder().append("[role=").append(target.getRole()).append("]").toString()));
-                    } else {
-                        elements = webDriver.findElements(By.tagName(target.getTag()));
-                    }
-                    break;
-                default:
-                    log.error("HTML5 tag without ARIA equivalent");
-                    elements = new ArrayList<>();
-                    break;
+                }
+                break;
+            default:
+                log.error("HTML5 tag without ARIA equivalent");
+                elements = new ArrayList<>();
+                break;
             }
 
             Iterator<WebElement> itWe = elements.iterator();
