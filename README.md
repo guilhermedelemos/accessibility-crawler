@@ -14,3 +14,8 @@
 * let crawler = new AccessibilityCrawler();
 * crawler.searchAriaLandmarks(ARIA_LANDMARKS, false);
 * crawler.execute(ARIA_LANDMARKS, false);
+
+## Alexa TOP
+* https://www.alexa.com/topsites
+* https://scans.io/study/scott-top-one-million
+
