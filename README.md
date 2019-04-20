@@ -35,3 +35,7 @@
 - Search.......23
 
 Total sites....37
+
+## Jquery
+
+https://api.jquery.com/jquery.noconflict/
