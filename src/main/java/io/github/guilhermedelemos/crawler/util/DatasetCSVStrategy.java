@@ -21,12 +21,12 @@ public class DatasetCSVStrategy extends DatasetStrategy {
     private int counter;
 
     public boolean createDataset(List<JSONObject> jsonSamples, String outputFile) {
-        if(jsonSamples == null || jsonSamples.size() < 1) {
+        if (jsonSamples == null || jsonSamples.size() < 1) {
             return false;
         }
 
         String file = null;
-        if(outputFile.isEmpty()) {
+        if (outputFile.isEmpty()) {
             file = "dataset_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv";
         }
         Path path = Paths.get(file);
@@ -34,20 +34,19 @@ public class DatasetCSVStrategy extends DatasetStrategy {
 
         log.info("Criando dataset");
 
-
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            writer.write("id;url;​​qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
+            writer.write("id;url;qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
             writer.newLine();
 
             long count = 0;
             Iterator<JSONObject> it = jsonSamples.iterator();
             while (it.hasNext()) {
                 JSONObject sample = it.next();
-//                log.info("Sample " + sample);
+                // log.info("Sample " + sample);
                 StringBuilder line = new StringBuilder();
                 line.append(count).append(COLUMN_SEPARATOR);
                 line.append(sample.getString("url")).append(COLUMN_SEPARATOR);
-//                line.append(sample.getString("qtdeElementosPagina")).append(COLUMN_SEPARATOR);
+                // line.append(sample.getString("qtdeElementosPagina")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "qtdeFilhos")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "tag")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "domId")).append(COLUMN_SEPARATOR);
@@ -64,7 +63,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
                 writer.newLine();
                 count++;
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.error("Erro ao criar o arquivo do dataset: " + file, e);
             return false;
         }
@@ -72,29 +71,27 @@ public class DatasetCSVStrategy extends DatasetStrategy {
     }
 
     public String getJSONValue(JSONObject obj, String key) {
-        if(obj == null || key == null || key.isEmpty() || obj.isEmpty() ) {
+        if (obj == null || key == null || key.isEmpty() || obj.isEmpty()) {
             return "null";
         }
-        if(
-            (key.equals("qtdeFilhos") || key.equals("posX") || key.equals("posY") || key.equals("height") || key.equals("width") || key.equals("area"))
-            && obj.get(key) == JSONObject.NULL
-            ) {
+        if ((key.equals("qtdeFilhos") || key.equals("posX") || key.equals("posY") || key.equals("height")
+                || key.equals("width") || key.equals("area")) && obj.get(key) == JSONObject.NULL) {
             return "0";
-        } else if(obj.get(key) == JSONObject.NULL) {
+        } else if (obj.get(key) == JSONObject.NULL) {
             return "null";
         }
         return obj.get(key).toString();
     }
 
     public void writeDomElementRecursive(WebPage webPage, DomElement domElement, BufferedWriter writer) {
-        if(domElement == null) {
+        if (domElement == null) {
             return;
         }
         this.writeDomElement(webPage, domElement, writer);
 
-        if(domElement.getChildren().size() > 0) {
+        if (domElement.getChildren().size() > 0) {
             Iterator<DomElement> it = domElement.getChildren().iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 this.writeDomElementRecursive(webPage, it.next(), writer);
             }
         }
@@ -110,13 +107,13 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.getId()).append(COLUMN_SEPARATOR);
             line.append(domElement.getTagName()).append(COLUMN_SEPARATOR);
             line.append(domElement.getChildren().size()).append(COLUMN_SEPARATOR);
-            if(domElement.getAriaLandmark() == null) {
+            if (domElement.getAriaLandmark() == null) {
                 line.append(0).append(COLUMN_SEPARATOR);
             } else {
                 line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
             }
             line.append(domElement.getHtml5Tag()).append(COLUMN_SEPARATOR);
-//            line.append("XPATH").append(COLUMN_SEPARATOR);
+            // line.append("XPATH").append(COLUMN_SEPARATOR);
             line.append(domElement.getPosX()).append(COLUMN_SEPARATOR);
             line.append(domElement.getPosY()).append(COLUMN_SEPARATOR);
             line.append(domElement.getHeight()).append(COLUMN_SEPARATOR);
@@ -124,12 +121,12 @@ public class DatasetCSVStrategy extends DatasetStrategy {
             line.append(domElement.isDisplayed()).append(COLUMN_SEPARATOR);
             line.append(domElement.isEnabled()).append(COLUMN_SEPARATOR);
             line.append(domElement.getArea()).append(COLUMN_SEPARATOR);
-//            line.append(domElement.getAriaLandmark().getDatasetClass()).append(COLUMN_SEPARATOR);
+            // line.append(domElement.getAriaLandmark().getDatasetClass()).append(COLUMN_SEPARATOR);
             line.append(domElement.getAriaLandmark().getRole()).append(COLUMN_SEPARATOR);
 
             writer.write(line.toString());
             writer.newLine();
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.error("Erro ao escrever no arquivo do dataset", e);
         }
         this.counter++;
@@ -138,10 +135,10 @@ public class DatasetCSVStrategy extends DatasetStrategy {
     public boolean deleteFile(String file) {
         Path path = Paths.get(file);
         try {
-            if(Files.exists(path)) {
+            if (Files.exists(path)) {
                 Files.delete(path);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.error("Erro ao deletar o arquivo do dataset", e);
             return false;
         }

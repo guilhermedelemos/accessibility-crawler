@@ -20,3 +20,7 @@ bin/
 # Outros
 .~lock*
 *.csv
+*.txt
+*.arff
+*.ods
+*.zip
