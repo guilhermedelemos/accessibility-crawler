@@ -20,6 +20,35 @@ public class ARIALandmarkBuilder extends CrawlerObject {
         return landmarks;
     }
 
+    public static List<ARIALandmark> build(boolean banner, boolean complementary, boolean contentinfo, boolean form, boolean main, boolean navigation, boolean region, boolean search) {
+        List<ARIALandmark> landmarks = new ArrayList<>();
+        if(banner) {
+            landmarks.add(buildBanner());
+        }
+        if(complementary) {
+            landmarks.add(buildComplementary());
+        }
+        if(contentinfo) {
+            landmarks.add(buildContentinfo());
+        }
+        if(form) {
+            landmarks.add(buildForm());
+        }
+        if(main) {
+            landmarks.add(buildMain());
+        }
+        if(navigation) {
+            landmarks.add(buildNavigation());
+        }
+        if(region) {
+            landmarks.add(buildRegion());
+        }
+        if(search) {
+            landmarks.add(buildSearch());
+        }
+        return landmarks;
+    }
+
     public static ARIALandmark buildLandmark(String landmark, int datasetClass) {
         ARIALandmark ariaLandmark = new ARIALandmark();
         ariaLandmark.setDatasetClass(datasetClass);

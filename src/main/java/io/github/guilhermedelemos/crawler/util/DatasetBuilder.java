@@ -11,7 +11,7 @@ public class DatasetBuilder extends Thread {
     public void run(){
         log.info("Thread");
         DatasetCSVStrategy dataset = new DatasetCSVStrategy();
-        dataset.createDataset(this.getWebPage());
+//        dataset.createDataset(this.getWebPage());
         log.info("Thread done");
     }
 

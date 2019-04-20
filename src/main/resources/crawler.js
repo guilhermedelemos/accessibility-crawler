@@ -58,12 +58,12 @@ class AccessibilityCrawler {
         let result = [];
         let counter = 0;
         for (let landmark of landmarks) {
-            // console.log('LANDMARK', landmark);
             let elements = document.querySelectorAll(`[role="${landmark}"]`);
             if (elements.length < 1) {
                 continue;
             }
-            result.push(...this.scanElements(elements, landmark));
+            let scanResult = this.scanElements(elements, landmark);
+            result.push(...scanResult);
         }
         if (json) {
             return this.toJSON(result);
@@ -80,9 +80,8 @@ class AccessibilityCrawler {
         for (let element of elements) {
             let sample = this.buildSample(element, landmark);
             result.push(sample);
-            // console.log("sample", sample);
             if (element.children.length > 0) {
-                result.push(...this.scanElements(element.children));
+                result.push(...this.scanElements(element.children, landmark));
             }
         }
         return result;
@@ -90,11 +89,7 @@ class AccessibilityCrawler {
 
     buildSample(element, sampleClass) {
         let sample = new Sample({
-            // id: counter,
-            // qtdeElementosPagina: elements.length,
             url: window.location.href,
-            // httpStatusCode,
-            // xpath,
             domId: element.id,
             tag: element.tagName,
             qtdeFilhos: element.children.length,
@@ -103,7 +98,7 @@ class AccessibilityCrawler {
             height: element.offsetHeight,
             width: element.offsetWidth,
             area: element.offsetHeight * element.offsetWidth,
-            visible: element.display != 'none', // visibility: hidden
+            visible: element.display != 'none',
             enabled: !element.disabled,
             classs: sampleClass
         });
@@ -128,9 +123,3 @@ class AccessibilityCrawler {
         return JSON.stringify(obj);
     }
 }
-// let crawler = new AccessibilityCrawler();
-// let landmarks = crawler.searchAriaLandmarks(ARIA_LANDMARKS);
-// console.log('Landmarks', landmarks);
-
-// let samples = crawler.execute(ARIA_LANDMARKS, false);
-// console.log('Samples', samples);

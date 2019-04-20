@@ -2,6 +2,7 @@ package io.github.guilhermedelemos.crawler.util;
 
 import io.github.guilhermedelemos.crawler.model.DomElement;
 import io.github.guilhermedelemos.crawler.model.WebPage;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,67 +20,70 @@ public class DatasetCSVStrategy extends DatasetStrategy {
 
     private int counter;
 
-    public boolean createDataset(WebPage webPage) {
-        if(webPage == null) {
+    public boolean createDataset(List<JSONObject> jsonSamples, String outputFile) {
+        if(jsonSamples == null || jsonSamples.size() < 1) {
             return false;
         }
 
-        String file = "dataset_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv";
+        String file = null;
+        if(outputFile.isEmpty()) {
+            file = "dataset_" + new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date()) + ".csv";
+        }
         Path path = Paths.get(file);
         this.deleteFile(file);
-//        try {
-//            if(Files.exists(path)) {
-//                Files.delete(path);
-//            }
-//        } catch(IOException e) {
-//            log.error("Erro ao deletar o arquivo do dataset", e);
-//        }
+
+        log.info("Criando dataset");
+
 
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
+            writer.write("id;url;​​qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
             writer.newLine();
 
-            Iterator<DomElement> itDom = webPage.getElements().iterator();
-            while (itDom.hasNext()) {
-                DomElement domElement = itDom.next();
-                this.writeDomElementRecursive(webPage, domElement, writer);
+            long count = 0;
+            Iterator<JSONObject> it = jsonSamples.iterator();
+            while (it.hasNext()) {
+                JSONObject sample = it.next();
+//                log.info("Sample " + sample);
+                StringBuilder line = new StringBuilder();
+                line.append(count).append(COLUMN_SEPARATOR);
+                line.append(sample.getString("url")).append(COLUMN_SEPARATOR);
+//                line.append(sample.getString("qtdeElementosPagina")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "qtdeFilhos")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "tag")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "domId")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "posX")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "posY")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "height")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "width")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "area")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "enabled")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "visible")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "classs")).append(COLUMN_SEPARATOR);
+
+                writer.write(line.toString());
+                writer.newLine();
+                count++;
             }
         } catch(IOException e) {
             log.error("Erro ao criar o arquivo do dataset: " + file, e);
+            return false;
         }
-
         return true;
     }
 
-    @Override
-    public boolean createDataset(List<WebPage> webPages, String outputFile) {
-        this.counter = 1;
-        if(webPages == null || webPages.size() == 0 || outputFile == null || outputFile.isEmpty()) {
-            return false;
+    public String getJSONValue(JSONObject obj, String key) {
+        if(obj == null || key == null || key.isEmpty() || obj.isEmpty() ) {
+            return "null";
         }
-        log.info("Criando dataset");
-
-        this.deleteFile(outputFile);
-//        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-//            writer.write("id;url;httpStatusCode;qtdeElementosPagina;domElementId;domTagName;domQtdeFilhos;ariaLandmark;html5tag;posX;posY;height;width;visivel;habilitado;area;classe");
-//            writer.newLine();
-
-            Iterator<WebPage> it = webPages.iterator();
-            while (it.hasNext()) {
-                WebPage webPage = it.next();
-
-                this.createDataset(webPage);
-
-//                Iterator<DomElement> itDom = webPage.getElements().iterator();
-//                while (itDom.hasNext()) {
-//                    DomElement domElement = itDom.next();
-//                    this.writeDomElementRecursive(webPage, domElement, writer);
-//                }
-            }
-//        } catch(IOException e) {
-//            log.error("Erro ao criar o arquivo do dataset", e);
-//        }
-        return true;
+        if(
+            (key.equals("qtdeFilhos") || key.equals("posX") || key.equals("posY") || key.equals("height") || key.equals("width") || key.equals("area"))
+            && obj.get(key) == JSONObject.NULL
+            ) {
+            return "0";
+        } else if(obj.get(key) == JSONObject.NULL) {
+            return "null";
+        }
+        return obj.get(key).toString();
     }
 
     public void writeDomElementRecursive(WebPage webPage, DomElement domElement, BufferedWriter writer) {

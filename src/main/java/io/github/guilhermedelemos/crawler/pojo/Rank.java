@@ -1,15 +1,16 @@
 package io.github.guilhermedelemos.crawler.pojo;
 
-import javax.persistence.*;
+// import javax.persistence.*;
 
-@Entity
-@Table(name="rank")
+// @Entity
+// @Table(name="rank")
 public class Rank {
 
-    @Id
-    //@GeneratedValue(strategy = GenerationType.SEQUENCE, sequenceName="rank_id_seq")
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    // sequenceName="rank_id_seq")
     private Long id;
-    @Column
+    // @Column
     private String name;
 
     public Rank() {

@@ -6,6 +6,6 @@ import java.util.List;
 
 public abstract class DatasetStrategy extends CrawlerObject {
 
-    public abstract boolean createDataset(List<WebPage> webPages, String outputFile);
+
 
 }
