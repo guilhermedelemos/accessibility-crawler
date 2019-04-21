@@ -7,35 +7,47 @@ class Sample {
         id,
         url,
         httpStatusCode,
-        qtdeElementosPagina,
+        elementCount,
+        isVisible,
+        isEnabled,
         xpath,
         domId,
         tag,
-        qtdeFilhos,
+        childrenCount,
         posX,
         posY,
+        offsetX,
+        offsetY,
         height,
         width,
+        innerHeight,
+        innerWidth,
+        outerHeight,
+        outerWidth,
         area,
-        visible,
-        enabled,
         classs
     } = {}) {
         this.id = id || null;
         this.url = url || null;
         this.httpStatusCode = httpStatusCode || null;
-        this.qtdeElementosPagina = qtdeElementosPagina || null;
+        this.elementCount = elementCount|| 0;
+        this.isVisible = isVisible || false;
+        this.isEnabled = isEnabled || false;
         this.xpath = xpath || null;
         this.domId = domId || null;
         this.tag = tag || null;
-        this.qtdeFilhos = qtdeFilhos || null;
-        this.posX = posX || null;
-        this.posY = posY || null;
-        this.height = height || null;
-        this.width = width || null;
-        this.area = area || null;
-        this.visible = visible || null;
-        this.enabled = enabled || null;
+        this.childrenCount = childrenCount || 0;
+        this.posX = posX || 0;
+        this.posY = posY || 0;
+        this.offsetX = offsetX || 0;
+        this.offsetY = offsetY | 0;
+        this.height = height || 0;
+        this.width = width || 0;
+        this.innerHeight = innerHeight || 0;
+        this.innerWidth = innerWidth || 0;
+        this.outerHeight = outerHeight || 0;
+        this.outerWidth = outerWidth || 0;
+        this.area = area || 0;
         this.classs = classs || null;
     }
 }
@@ -56,7 +68,6 @@ class AccessibilityCrawler {
 
     execute(landmarks, json = true) {
         let result = [];
-        let counter = 0;
         for (let landmark of landmarks) {
             let elements = document.querySelectorAll(`[role="${landmark}"]`);
             if (elements.length < 1) {
@@ -92,14 +103,14 @@ class AccessibilityCrawler {
             url: window.location.href,
             domId: element.id,
             tag: element.tagName,
-            qtdeFilhos: element.children.length,
+            childrenCount: element.children.length,
             posX: element.offsetLeft,
             posY: element.offsetTop,
             height: element.offsetHeight,
             width: element.offsetWidth,
             area: element.offsetHeight * element.offsetWidth,
-            visible: element.display != 'none',
-            enabled: !element.disabled,
+            isVisible: element.display != 'none',
+            isEnabled: !element.disabled,
             classs: sampleClass
         });
         return sample;
