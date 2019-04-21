@@ -43,26 +43,31 @@ https://api.jquery.com/jquery.noconflict/
 
 <script>
     console.log("jQuery", $.fn.jquery);
-    let element = $("#filho");
-    console.log(element);
-    // https://api.jquery.com/visible-selector/
-    console.log("Visible:", element.is(":visible")); // Considerado visível se possuir wifth e height maior que zero
-    // https://api.jquery.com/disabled-selector/ & https://html.spec.whatwg.org/multipage/semantics-other.html#disabled-elements
-    console.log("Enabled:", !element.is(":disabled"));
-    // https://api.jquery.com/position/
-    console.log("posLeft:", element.position().left); // relativo ao elemento pai
-    console.log("posTop:", element.position().top); // relativo ao elemento pai
-    // http://api.jquery.com/offset/
-    console.log("offetLeft:", element.offset().left); // referente ao documento
-    console.log("offetTop:", element.offset().top); // referente ao documento
-    console.log("width", element.width());
-    console.log("height", element.height());
-    console.log("innerWidth", element.innerWidth());
-    console.log("innerHeight", element.innerHeight());
-    console.log("outerWidth", element.outerWidth());
-    console.log("outerHeight", element.outerHeight());
-    console.log("childrenCount", element.children().length);
-    // https://api.jquery.com/length/
-    console.log("length", element.length);
+    let elements = $('[role="banner"]');
+    elements.each(function(index){
+        console.log('==============================');
+        console.log('#' + index);
+        console.log('', $(this));
+
+        // https://api.jquery.com/visible-selector/
+        console.log("Visible:", $(this).is(":visible")); // Considerado visível se possuir wifth e height maior que zero
+        // https://api.jquery.com/disabled-selector/ & https://html.spec.whatwg.org/multipage/semantics-other.html#disabled-elements
+        console.log("Enabled:", !$(this).is(":disabled"));
+        // https://api.jquery.com/position/
+        console.log("posLeft:", $(this).position().left); // relativo ao elemento pai
+        console.log("posTop:", $(this).position().top); // relativo ao elemento pai
+        // http://api.jquery.com/offset/
+        console.log("offetLeft:", $(this).offset().left); // referente ao documento
+        console.log("offetTop:", $(this).offset().top); // referente ao documento
+        console.log("width", $(this).width());
+        console.log("height", $(this).height());
+        console.log("innerWidth", $(this).innerWidth());
+        console.log("innerHeight", $(this).innerHeight());
+        console.log("outerWidth", $(this).outerWidth());
+        console.log("outerHeight", $(this).outerHeight());
+        console.log("childrenCount", $(this).children().length);
+        // https://api.jquery.com/length/
+        console.log("length", $(this).length);
+    });
 </script>
 ```
