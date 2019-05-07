@@ -66,14 +66,33 @@ class SearchSample {
 
 class AccessibilityCrawler {
 
-    execute(landmarks, json = true) {
+    isJqueryLoadded() {
+        return !!window.jQuery;
+    }
+
+    findElements(landmark, jquery) {
+        if(jquery) {
+            return $(`[role="${landmark}"]`);
+        } else {
+            return document.querySelectorAll(`[role="${landmark}"]`);
+        }
+    }
+
+    execute(landmarks, jquery = true, json = true) {
         let result = [];
+        
+        let JQueryLoaded = this.isJqueryLoadded();
+        if(!JQueryLoaded && jquery) {
+            console.log("JQuery is not enabled");
+            return result;
+        }        
+
         for (let landmark of landmarks) {
-            let elements = document.querySelectorAll(`[role="${landmark}"]`);
+            let elements = this.findElements(landmark, jquery);
             if (elements.length < 1) {
                 continue;
             }
-            let scanResult = this.scanElements(elements, landmark);
+            let scanResult = this.scanElements(elements, landmark, jquery);
             result.push(...scanResult);
         }
         if (json) {
@@ -83,37 +102,117 @@ class AccessibilityCrawler {
         }
     }
 
-    scanElements(elements, landmark) {
+    scanElements(elements, landmark, jquery) {
         if (elements.length < 1) {
             return [];
         }
         let result = [];
         for (let element of elements) {
-            let sample = this.buildSample(element, landmark);
+            let sample = this.buildSample(element, landmark, jquery);
             result.push(sample);
             if (element.children.length > 0) {
-                result.push(...this.scanElements(element.children, landmark));
+                result.push(...this.scanElements(element.children, landmark, jquery));
             }
         }
         return result;
     }
 
-    buildSample(element, sampleClass) {
+    buildSample(element, sampleClass, jquery) {
         let sample = new Sample({
-            url: window.location.href,
-            domId: element.id,
-            tag: element.tagName,
-            childrenCount: element.children.length,
-            posX: element.offsetLeft,
-            posY: element.offsetTop,
-            height: element.offsetHeight,
-            width: element.offsetWidth,
-            area: element.offsetHeight * element.offsetWidth,
-            isVisible: element.display != 'none',
-            isEnabled: !element.disabled,
+            url: this.getReferer(),
+            domId: this.getElementId(element, jquery),
+            tag: this.getElementTagName(element, jquery),
+            childrenCount: this.getElementChildrenCount(element, jquery),
+            posX: this.getElementPosX(element, jquery),
+            posY: this.getElementPosY(element, jquery),
+            height: this.getElementHeight(element, jquery),
+            width: this.getElementWidth(element, jquery),
+            area: this.getElementArea(element, jquery),
+            isVisible: this.getElementVisibility(element, jquery),
+            isEnabled: this.getElementEnabled(element, jquery),
             classs: sampleClass
         });
         return sample;
+    }
+
+    getReferer() {
+        return window.location.href;
+    }
+
+    getElementId(element, jquery=true) {
+        if(jquery) {
+            return $(element).attr("id");
+        } else {
+            return element.id;
+        }
+    }
+
+    getElementTagName(element, jquery=true) {
+        if(jquery) {
+            return $(element).prop("tagName");
+        } else {
+            return element.tagName;
+        }
+    }
+
+    getElementChildrenCount(element, jquery=true) {
+        if(jquery) {
+            return $(element).children().length;
+        } else {
+            return element.children.length;
+        }        
+    }
+
+    getElementHeight(element, jquery=true) {
+        if(jquery) {
+            return $(element).innerHeight();
+        } else {
+            return element.offsetHeight;
+        }        
+    }
+
+    getElementWidth(element, jquery=true) {
+        if(jquery) {
+            return $(element).innerWidth();
+        } else {
+            return element.offsetWidth;
+        }        
+    }
+
+    getElementArea(element) {
+        return this.getElementHeight(element) * this.getElementWidth(element);
+    }
+
+    getElementPosX(element, jquery=true) {
+        if(jquery) {
+            return $(element).position().left;
+        } else {
+            return element.offsetLeft;
+        }        
+    }
+
+    getElementPosY(element, jquery=true) {
+        if(jquery) {
+            return $(element).position().top;
+        } else {
+            return element.offsetTop;
+        }        
+    }
+
+    getElementVisibility(element, jquery=true) {
+        if(jquery) {
+            return $(element).is(":visible")
+        } else {
+            return element.display != 'none';
+        }        
+    }
+
+    getElementEnabled(element, jquery=true) {
+        if(jquery) {
+            return !$(element).is(":disabled");
+        } else {
+            return !element.disabled;
+        }        
     }
 
     searchAriaLandmarks(ariaLandmarks) {
