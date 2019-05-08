@@ -68,6 +68,13 @@ public class Crawler extends CrawlerObject {
             return false;
         }
 
+        // #2.1 Load jquery
+        String jqueryJS = this.loadJavaScriptFile(Resources.getResource("jquery-3.4.0.min.js").getPath());
+        if (jqueryJS.isEmpty()) {
+            log.info("jquery-3.4.0.min.js não encontrado.");
+            return false;
+        }
+
         // #3 Scan
         long sitesTotal = sites.size();
         long startTimeScan = System.currentTimeMillis();
@@ -78,9 +85,14 @@ public class Crawler extends CrawlerObject {
             log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
             webDriver.get(site.getUrl());
 
-            Object retorno = js
-                    .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute(ARIA_LANDMARKS, true)");
+            boolean jqueryLoadded = (Boolean) js.executeScript("return !!window.jQuery;");
+            if(!jqueryLoadded) {
+                Object retorno = js.executeScript(jqueryJS);
+            }
 
+            Object retorno = js
+                    .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute(ARIA_LANDMARKS, true, true)");
+            
             if (retorno.toString().isEmpty()) {
                 log.info("Nenhuma landmark encontrada");
             } else {

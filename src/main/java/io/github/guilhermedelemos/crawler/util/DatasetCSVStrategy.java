@@ -35,7 +35,8 @@ public class DatasetCSVStrategy extends DatasetStrategy {
         log.info("Criando dataset");
 
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            writer.write("id;url;qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
+            // writer.write("id;url;qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
+            writer.write("id;url;tag;qtdeFilhos;domId;posX;posY;height;width;area;enabled;visible;class");
             writer.newLine();
 
             long count = 0;
@@ -47,16 +48,16 @@ public class DatasetCSVStrategy extends DatasetStrategy {
                 line.append(count).append(COLUMN_SEPARATOR);
                 line.append(sample.getString("url")).append(COLUMN_SEPARATOR);
                 // line.append(sample.getString("qtdeElementosPagina")).append(COLUMN_SEPARATOR);
-                line.append(this.getJSONValue(sample, "qtdeFilhos")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "tag")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "childrenCount")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "domId")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "posX")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "posY")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "height")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "width")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "area")).append(COLUMN_SEPARATOR);
-                line.append(this.getJSONValue(sample, "enabled")).append(COLUMN_SEPARATOR);
-                line.append(this.getJSONValue(sample, "visible")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "isEnabled")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "isVisible")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "classs")).append(COLUMN_SEPARATOR);
 
                 writer.write(line.toString());
