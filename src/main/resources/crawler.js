@@ -125,6 +125,8 @@ class AccessibilityCrawler {
             childrenCount: this.getElementChildrenCount(element, jquery),
             posX: this.getElementPosX(element, jquery),
             posY: this.getElementPosY(element, jquery),
+            offsetX: this.getElementOffsetX(element, jquery),
+            offsetY: this.getElementOffsetY(element, jquery),
             height: this.getElementHeight(element, jquery),
             width: this.getElementWidth(element, jquery),
             area: this.getElementArea(element, jquery),
@@ -188,7 +190,7 @@ class AccessibilityCrawler {
             return $(element).position().left;
         } else {
             return element.offsetLeft;
-        }        
+        }
     }
 
     getElementPosY(element, jquery=true) {
@@ -196,7 +198,23 @@ class AccessibilityCrawler {
             return $(element).position().top;
         } else {
             return element.offsetTop;
-        }        
+        }
+    }
+
+    getElementOffsetX(element, jquery=true) {
+        if(jquery) {
+            return $(element).offset().left;
+        } else {
+            return element.offsetTop;
+        }
+    }
+
+    getElementOffsetY(element, jquery=true) {
+        if(jquery) {
+            return $(element).offset().top;
+        } else {
+            return element.offsetTop;
+        }
     }
 
     getElementVisibility(element, jquery=true) {
