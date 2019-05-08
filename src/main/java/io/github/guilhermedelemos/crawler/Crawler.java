@@ -85,10 +85,7 @@ public class Crawler extends CrawlerObject {
             log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
             webDriver.get(site.getUrl());
 
-            boolean jqueryLoadded = (Boolean) js.executeScript("return !!window.jQuery;");
-            if(!jqueryLoadded) {
-                Object retorno = js.executeScript(jqueryJS);
-            }
+            js.executeScript(jqueryJS);
 
             Object retorno = js
                     .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute(ARIA_LANDMARKS, true, true)");
