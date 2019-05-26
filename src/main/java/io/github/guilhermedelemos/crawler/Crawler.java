@@ -83,7 +83,13 @@ public class Crawler extends CrawlerObject {
             Site site = sites.get(i);
             long startSiteScan = System.currentTimeMillis();
             log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
-            webDriver.get(site.getUrl());
+            try {
+                webDriver.get(site.getUrl());
+            } catch(Exception e) {
+                log.error("Não foi possível carregar o site: " + site.getUrl());
+                e.printStackTrace();
+                continue;
+            }
 
             js.executeScript(jqueryJS);
 
