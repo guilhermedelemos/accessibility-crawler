@@ -85,9 +85,8 @@ public class Crawler extends CrawlerObject {
             log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
             try {
                 webDriver.get(site.getUrl());
-            } catch(Exception e) {
+            } catch(org.openqa.selenium.TimeoutException e) {
                 log.error("Não foi possível carregar o site: " + site.getUrl());
-                e.printStackTrace();
                 continue;
             }
 

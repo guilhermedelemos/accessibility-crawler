@@ -120,6 +120,8 @@ class AccessibilityCrawler {
     buildSample(element, sampleClass, jquery) {
         let sample = new Sample({
             url: this.getReferer(),
+            elementCount: 0,
+            xpath: '',
             domId: this.getElementId(element, jquery),
             tag: this.getElementTagName(element, jquery),
             childrenCount: this.getElementChildrenCount(element, jquery),
@@ -129,6 +131,10 @@ class AccessibilityCrawler {
             offsetY: this.getElementOffsetY(element, jquery),
             height: this.getElementHeight(element, jquery),
             width: this.getElementWidth(element, jquery),
+            innerHeight: 0,
+            innerWidth: 0,
+            outerHeight: 0,
+            outerWidth: 0,
             area: this.getElementArea(element, jquery),
             isVisible: this.getElementVisibility(element, jquery),
             isEnabled: this.getElementEnabled(element, jquery),
