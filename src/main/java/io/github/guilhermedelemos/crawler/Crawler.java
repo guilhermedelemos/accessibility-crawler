@@ -93,7 +93,7 @@ public class Crawler extends CrawlerObject {
             js.executeScript(jqueryJS);
 
             Object retorno = js
-                    .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute(ARIA_LANDMARKS, true, true)");
+                    .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
             
             if (retorno.toString().isEmpty()) {
                 log.info("Nenhuma landmark encontrada");

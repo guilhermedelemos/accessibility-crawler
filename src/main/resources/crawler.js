@@ -1,15 +1,12 @@
 const ARIA_LANDMARKS = ['banner', 'complementary', 'contentinfo', 'form', 'main', 'navigation', 'region',
     'search'
 ];
+const CLASS_OTHER = 'other';
 
 class Sample {
     constructor({
         id,
         url,
-        httpStatusCode,
-        elementCount,
-        isVisible,
-        isEnabled,
         xpath,
         domId,
         tag,
@@ -25,12 +22,12 @@ class Sample {
         outerHeight,
         outerWidth,
         area,
+        isVisible,
+        isEnabled,
         classs
     } = {}) {
         this.id = id || null;
         this.url = url || null;
-        this.httpStatusCode = httpStatusCode || null;
-        this.elementCount = elementCount|| 0;
         this.isVisible = isVisible || false;
         this.isEnabled = isEnabled || false;
         this.xpath = xpath || null;
@@ -70,31 +67,21 @@ class AccessibilityCrawler {
         return !!window.jQuery;
     }
 
-    findElements(landmark, jquery) {
-        if(jquery) {
-            return $(`[role="${landmark}"]`);
-        } else {
-            return document.querySelectorAll(`[role="${landmark}"]`);
-        }
-    }
-
-    execute(landmarks, jquery = true, json = true) {
+    execute(json=true) {
         let result = [];
-        
+
         let JQueryLoaded = this.isJqueryLoadded();
-        if(!JQueryLoaded && jquery) {
+        if(!JQueryLoaded) {
             console.log("JQuery is not enabled");
             return result;
-        }        
-
-        for (let landmark of landmarks) {
-            let elements = this.findElements(landmark, jquery);
-            if (elements.length < 1) {
-                continue;
-            }
-            let scanResult = this.scanElements(elements, landmark, jquery);
-            result.push(...scanResult);
         }
+
+        let elements = $('body').children();
+        if (elements.length < 1) {
+            return result;
+        }
+        let scanResult = this.scanElements(elements);
+        result.push(...scanResult);
         if (json) {
             return this.toJSON(result);
         } else {
@@ -102,155 +89,140 @@ class AccessibilityCrawler {
         }
     }
 
-    scanElements(elements, landmark, jquery) {
+    scanElements(elements) {
         if (elements.length < 1) {
             return [];
         }
+
         let result = [];
         for (let element of elements) {
-            let sample = this.buildSample(element, landmark, jquery);
+            if($(element).is('script') || $(element).is('style')) {
+                continue;
+            }
+            let sample = this.buildSample(element);
             result.push(sample);
             if (element.children.length > 0) {
-                result.push(...this.scanElements(element.children, landmark, jquery));
+                result.push(...this.scanElements(element.children));
             }
         }
         return result;
     }
 
-    buildSample(element, sampleClass, jquery) {
+    buildSample(element) {
         let sample = new Sample({
             url: this.getReferer(),
-            elementCount: 0,
             xpath: '',
-            domId: this.getElementId(element, jquery),
-            tag: this.getElementTagName(element, jquery),
-            childrenCount: this.getElementChildrenCount(element, jquery),
-            posX: this.getElementPosX(element, jquery),
-            posY: this.getElementPosY(element, jquery),
-            offsetX: this.getElementOffsetX(element, jquery),
-            offsetY: this.getElementOffsetY(element, jquery),
-            height: this.getElementHeight(element, jquery),
-            width: this.getElementWidth(element, jquery),
-            innerHeight: 0,
-            innerWidth: 0,
-            outerHeight: 0,
-            outerWidth: 0,
-            area: this.getElementArea(element, jquery),
-            isVisible: this.getElementVisibility(element, jquery),
-            isEnabled: this.getElementEnabled(element, jquery),
-            classs: sampleClass
+            domId: this.getElementId(element),
+            tag: this.getElementTagName(element),
+            childrenCount: this.getElementChildrenCount(element),
+            posX: this.getElementPosX(element),
+            posY: this.getElementPosY(element),
+            offsetX: this.getElementOffsetX(element),
+            offsetY: this.getElementOffsetY(element),
+            height: this.getElementHeight(element),
+            width: this.getElementWidth(element),
+            innerHeight: this.getElementInnerHeight(element),
+            innerWidth: this.getElementInnerWidth(element),
+            outerHeight: this.getElementOuterHeight(element),
+            outerWidth: this.getElementOuterWidth(element),
+            area: this.getElementArea(element),
+            isVisible: this.getElementVisibility(element),
+            isEnabled: this.getElementEnabled(element),
+            classs: this.getElementClass(element)
         });
         return sample;
+    }
+
+    getElementClass(element) {
+        let role = element.getAttribute('role');
+        if(role == undefined || role == null) {
+            return CLASS_OTHER;
+        }
+        let idxRole = ARIA_LANDMARKS.indexOf(role.toLowerCase());
+        if(idxRole > -1) {
+            return ARIA_LANDMARKS[idxRole];
+        } else {
+            return CLASS_OTHER;
+        }
     }
 
     getReferer() {
         return window.location.href;
     }
 
-    getElementId(element, jquery=true) {
-        if(jquery) {
-            return $(element).attr("id");
-        } else {
-            return element.id;
-        }
+    getElementId(element) {
+        return element.id;
+        // return $(element).attr("id");
     }
 
-    getElementTagName(element, jquery=true) {
-        if(jquery) {
-            return $(element).prop("tagName");
-        } else {
-            return element.tagName;
-        }
+    getElementTagName(element) {
+        return element.tagName;
+        // return $(element).prop("tagName");
     }
 
-    getElementChildrenCount(element, jquery=true) {
-        if(jquery) {
-            return $(element).children().length;
-        } else {
-            return element.children.length;
-        }        
+    getElementChildrenCount(element) {
+        return element.children.length;
+        // return $(element).children().length;
     }
 
-    getElementHeight(element, jquery=true) {
-        if(jquery) {
-            return $(element).innerHeight();
-        } else {
-            return element.offsetHeight;
-        }        
+    getElementHeight(element) {
+        // return element.offsetHeight;
+        return $(element).innerHeight();
     }
 
-    getElementWidth(element, jquery=true) {
-        if(jquery) {
-            return $(element).innerWidth();
-        } else {
-            return element.offsetWidth;
-        }        
+    getElementWidth(element) {
+        // return element.offsetWidth;
+        return $(element).innerWidth();
+    }
+
+    getElementInnerHeight(element) {
+        return $(element).innerHeight();
+    }
+
+    getElementInnerWidth(element) {
+        return $(element).innerWidth();
+    }
+
+    getElementOuterHeight(element) {
+        return $(element).outerHeight();
+    }
+
+    getElementOuterWidth(element) {
+        return $(element).outerWidth();
     }
 
     getElementArea(element) {
         return this.getElementHeight(element) * this.getElementWidth(element);
     }
 
-    getElementPosX(element, jquery=true) {
-        if(jquery) {
-            return $(element).position().left;
-        } else {
-            return element.offsetLeft;
-        }
+    getElementPosX(element) {
+        // return element.offsetLeft;
+        return $(element).position().left;
     }
 
-    getElementPosY(element, jquery=true) {
-        if(jquery) {
-            return $(element).position().top;
-        } else {
-            return element.offsetTop;
-        }
+    getElementPosY(element) {
+        // return element.offsetTop;
+        return $(element).position().top;
     }
 
-    getElementOffsetX(element, jquery=true) {
-        if(jquery) {
-            return $(element).offset().left;
-        } else {
-            return element.offsetTop;
-        }
+    getElementOffsetX(element) {
+        // return element.offsetTop;
+        return $(element).offset().left;
     }
 
-    getElementOffsetY(element, jquery=true) {
-        if(jquery) {
-            return $(element).offset().top;
-        } else {
-            return element.offsetTop;
-        }
+    getElementOffsetY(element) {
+        // return element.offsetTop;
+        return $(element).offset().top;
     }
 
-    getElementVisibility(element, jquery=true) {
-        if(jquery) {
-            return $(element).is(":visible")
-        } else {
-            return element.display != 'none';
-        }        
+    getElementVisibility(element) {
+        // return element.display != 'none';
+        return $(element).is(":visible");
     }
 
     getElementEnabled(element, jquery=true) {
-        if(jquery) {
-            return !$(element).is(":disabled");
-        } else {
-            return !element.disabled;
-        }        
-    }
-
-    searchAriaLandmarks(ariaLandmarks) {
-        let result = [];
-        for (let landmark of ariaLandmarks) {
-            let elements = document.querySelectorAll(`[role="${landmark}"]`);
-            let sample = new SearchSample({
-                landmark: landmark,
-                exists: elements.length > 0,
-                count: elements.length
-            });
-            result.push(sample);
-        }
-        return result;
+        // return !element.disabled;
+        return !$(element).is(":disabled");
     }
 
     toJSON(obj) {
