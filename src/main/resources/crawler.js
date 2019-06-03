@@ -217,10 +217,11 @@ class AccessibilityCrawler {
 
     getElementVisibility(element) {
         // return element.display != 'none';
-        return $(element).is(":visible");
+        // return $(element).is(":visible");
+        return element.isVisible();
     }
 
-    getElementEnabled(element, jquery=true) {
+    getElementEnabled(element) {
         // return !element.disabled;
         return !$(element).is(":disabled");
     }

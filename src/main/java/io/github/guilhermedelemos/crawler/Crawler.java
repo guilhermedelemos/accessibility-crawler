@@ -75,6 +75,13 @@ public class Crawler extends CrawlerObject {
             return false;
         }
 
+        // #2.2 Load true-visibility
+        String visibilityJS = this.loadJavaScriptFile(Resources.getResource("visibility.js").getPath());
+        if (visibilityJS.isEmpty()) {
+            log.info("visibility.js não encontrado.");
+            return false;
+        }
+
         // #3 Scan
         long sitesTotal = sites.size();
         long startTimeScan = System.currentTimeMillis();
@@ -91,6 +98,7 @@ public class Crawler extends CrawlerObject {
             }
 
             js.executeScript(jqueryJS);
+            js.executeScript(visibilityJS);
 
             Object retorno = js
                     .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
