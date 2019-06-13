@@ -32,10 +32,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
         Path path = Paths.get(file);
         this.deleteFile(file);
 
-        log.info("Criando dataset");
-
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-            // writer.write("id;url;qtdeFilhos;tag;domId;posX;posY;height;width;area;enabled;visible;class");
             writer.write("id;url;domId;tag;childrenCount;posX;posY;offsetX;offsetY;height;width;innerHeight;innerWidth;outerHeight;outerWidth;area;enabled;visible;class");
             writer.newLine();
 
