@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -83,18 +85,18 @@ public class Crawler extends CrawlerObject {
         }
 
         // #3 Scan
-        long sitesTotal = sites.size();
+//        long sitesTotal = sites.size();
         long startTimeScan = System.currentTimeMillis();
         List<JSONObject> samples = new ArrayList<>();
-        for (int i = 0; i < sites.size(); i++) {
-            Site site = sites.get(i);
+
+        sites.stream().forEach( (site) -> {
             long startSiteScan = System.currentTimeMillis();
-            log.info("Varrendo " + site.getUrl() + " (" + (i + 1) + "/" + sitesTotal + ")");
+            log.info("Varrendo " + site.getUrl());
             try {
                 webDriver.get(site.getUrl());
             } catch(org.openqa.selenium.TimeoutException e) {
                 log.error("Não foi possível carregar o site: " + site.getUrl());
-                continue;
+                return;
             }
 
             js.executeScript(jqueryJS);
@@ -102,7 +104,7 @@ public class Crawler extends CrawlerObject {
 
             Object retorno = js
                     .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
-            
+
             if (retorno.toString().isEmpty()) {
                 log.info("Nenhuma landmark encontrada");
             } else {
@@ -110,24 +112,25 @@ public class Crawler extends CrawlerObject {
                 log.info(jsonArray.length() + " samples extracted");
                 for (int j = 0; j < jsonArray.length(); j++) {
                     samples.add(jsonArray.getJSONObject(j));
-                    // JSONObject jsonObj = jsonArray.getJSONObject(i);
-                    // log.info("sample: " + jsonObj.toString());
                 }
             }
             long endSiteScan = System.currentTimeMillis();
             log.info("Tempo para varrer o site: " + (endSiteScan - startSiteScan));
-        }
+        });
 
         // #4 Build dataset
-        log.info("Criando dataset");
+        Instant inicioDataset = Instant.now();
+        log.info("PASSO 4 - Criando dataset");
         DatasetCSVStrategy dataset = new DatasetCSVStrategy();
         boolean datasetCreated = dataset.createDataset(samples, "");
         if (!datasetCreated) {
             log.info("Erro ao criar o dataset");
         }
+        log.info("Tempo de criação do dataset: " + Duration.between(inicioDataset, Instant.now()).toMillis() + " ms");
 
         long endTimeScan = System.currentTimeMillis();
 
+        log.info("RESUMO");
         log.info("Tempo para carregar o WebDriver: " + (endTimeWebDriver - startTimeWebDriver));
         log.info("Tempo para varrer os sites: " + (endTimeScan - startTimeScan));
         log.info("Tempo de execução: " + (System.currentTimeMillis() - startTime));
