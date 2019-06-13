@@ -71,3 +71,28 @@ https://api.jquery.com/jquery.noconflict/
     });
 </script>
 ```
+### JS on console
+
+#### JQuery
+`
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
+document.head.appendChild(script);
+`
+
+## true visibility
+`
+var scriptV = document.createElement('script');
+scriptV.type = 'text/javascript';
+scriptV.src = 'https://guilhermedelemos.github.io/accessible/examples/visibility.js';
+document.head.appendChild(scriptV);
+`
+
+
+## TODO isVisible()
+25;http://fatosdesconhecidos.com.br;2019-01-29;alexa-top-50-brasil
+46;http://letras.mus.br;2019-01-29;alexa-top-50-brasil
+21;http://cnn.com;2019-01-30;alexa-top-50-usa
+28;http://livejasmin.com;2019-01-30;alexa-top-50-usa
+34;http://hulu.com;2019-01-30;alexa-top-50-usa
