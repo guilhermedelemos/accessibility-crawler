@@ -67,7 +67,7 @@ class AccessibilityCrawler {
         return !!window.jQuery;
     }
 
-    execute(json=true) {
+    execute(childrenClass=false, json=true) {
         let result = [];
 
         let JQueryLoaded = this.isJqueryLoadded();
@@ -80,7 +80,7 @@ class AccessibilityCrawler {
         if (elements.length < 1) {
             return result;
         }
-        let scanResult = this.scanElements(elements);
+        let scanResult = this.scanElements(elements, childrenClass);
         result.push(...scanResult);
         if (json) {
             return this.toJSON(result);
@@ -89,7 +89,7 @@ class AccessibilityCrawler {
         }
     }
 
-    scanElements(elements) {
+    scanElements(elements, ancestralClass=false) {
         if (elements.length < 1) {
             return [];
         }
@@ -99,16 +99,24 @@ class AccessibilityCrawler {
             if($(element).is('script') || $(element).is('style')) {
                 continue;
             }
-            let sample = this.buildSample(element);
+            let sample = this.buildSample(element, ancestralClass);
             result.push(sample);
+            let elementClass;
             if (element.children.length > 0) {
-                result.push(...this.scanElements(element.children));
+                if(ancestralClass === true) {
+                    elementClass = sample.classs;
+                } else if(ancestralClass === false) {
+                    elementClass = false;
+                } else {
+                    elementClass = ancestralClass
+                }
+                result.push(...this.scanElements(element.children, elementClass));
             }
         }
         return result;
     }
 
-    buildSample(element) {
+    buildSample(element, elementClass) {
         let sample = new Sample({
             url: this.getReferer(),
             xpath: '',
@@ -128,21 +136,34 @@ class AccessibilityCrawler {
             area: this.getElementArea(element),
             isVisible: this.getElementVisibility(element),
             isEnabled: this.getElementEnabled(element),
-            classs: this.getElementClass(element)
+            classs: this.getElementClass(element, elementClass)
         });
         return sample;
     }
 
-    getElementClass(element) {
+    getElementClass(element, elementClass) {
         let role = element.getAttribute('role');
-        if(role == undefined || role == null) {
-            return CLASS_OTHER;
-        }
-        let idxRole = ARIA_LANDMARKS.indexOf(role.toLowerCase());
-        if(idxRole > -1) {
-            return ARIA_LANDMARKS[idxRole];
+        if(elementClass === true || elementClass === false) {
+            if(role == undefined || role == null) {
+                return CLASS_OTHER;
+            }
+            let idxRole = ARIA_LANDMARKS.indexOf(role.toLowerCase());
+            if(idxRole > -1) {
+                return ARIA_LANDMARKS[idxRole];
+            } else {
+                return CLASS_OTHER;
+            }
         } else {
-            return CLASS_OTHER;
+            if(role !== undefined && role !== null) {
+                let idxRole = ARIA_LANDMARKS.indexOf(role.toLowerCase());
+                if(idxRole > -1) {
+                    return ARIA_LANDMARKS[idxRole];
+                } else {
+                    return elementClass
+                }
+            } else {
+                return elementClass
+            }
         }
     }
 
@@ -152,26 +173,21 @@ class AccessibilityCrawler {
 
     getElementId(element) {
         return element.id;
-        // return $(element).attr("id");
     }
 
     getElementTagName(element) {
         return element.tagName;
-        // return $(element).prop("tagName");
     }
 
     getElementChildrenCount(element) {
         return element.children.length;
-        // return $(element).children().length;
     }
 
     getElementHeight(element) {
-        // return element.offsetHeight;
         return $(element).innerHeight();
     }
 
     getElementWidth(element) {
-        // return element.offsetWidth;
         return $(element).innerWidth();
     }
 
@@ -196,33 +212,26 @@ class AccessibilityCrawler {
     }
 
     getElementPosX(element) {
-        // return element.offsetLeft;
         return $(element).position().left;
     }
 
     getElementPosY(element) {
-        // return element.offsetTop;
         return $(element).position().top;
     }
 
     getElementOffsetX(element) {
-        // return element.offsetTop;
         return $(element).offset().left;
     }
 
     getElementOffsetY(element) {
-        // return element.offsetTop;
         return $(element).offset().top;
     }
 
     getElementVisibility(element) {
-        // return element.display != 'none';
-        // return $(element).is(":visible");
         return element.isVisible();
     }
 
     getElementEnabled(element) {
-        // return !element.disabled;
         return !$(element).is(":disabled");
     }
 
