@@ -5,7 +5,6 @@ import io.github.guilhermedelemos.crawler.model.Site;
 import io.github.guilhermedelemos.crawler.util.CrawlerObject;
 import io.github.guilhermedelemos.crawler.util.StrategySiteCSV;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,13 +67,13 @@ public class Application extends CrawlerObject {
         List<Site> sample;
 
         try {
-            controlSitesAria = (new StrategySiteCSV()).read(Resources.getResource("sites/control-sample-aria.csv").getPath());
-            controlSitesHTML5 = (new StrategySiteCSV()).read(Resources.getResource("sites/control-sample-html5.csv").getPath());
-            alexaSites = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50.csv").getPath());
-            alexaSitesBrazil = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50-Brazil.csv").getPath());
-            alexaSitesUsa = (new StrategySiteCSV()).read(Resources.getResource("sites/alexa-top-50-USA.csv").getPath());
-            sample = (new StrategySiteCSV()).read(Resources.getResource("sites/sample.csv").getPath());
-        } catch (IOException e) {
+            controlSitesAria = (new StrategySiteCSV()).read(Resources.getResource("sites\\control-sample-aria.csv").toURI());
+            controlSitesHTML5 = (new StrategySiteCSV()).read(Resources.getResource("sites\\control-sample-html5.csv").toURI());
+            alexaSites = (new StrategySiteCSV()).read(Resources.getResource("sites\\alexa-top-50.csv").toURI());
+            alexaSitesBrazil = (new StrategySiteCSV()).read(Resources.getResource("sites\\alexa-top-50-Brazil.csv").toURI());
+            alexaSitesUsa = (new StrategySiteCSV()).read(Resources.getResource("sites\\alexa-top-50-USA.csv").toURI());
+            sample = (new StrategySiteCSV()).read(Resources.getResource("sites\\sample.csv").toURI());
+        } catch (Exception e) {
             log.error("Error on loading sites list", e);
             return new ArrayList<>();
         }

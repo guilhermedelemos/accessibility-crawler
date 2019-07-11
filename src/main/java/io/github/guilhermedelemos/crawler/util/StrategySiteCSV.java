@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.URI;
 
 public class StrategySiteCSV extends CrawlerObject {
 
@@ -19,9 +20,9 @@ public class StrategySiteCSV extends CrawlerObject {
     public static final int POS_URL = 1;
     public static final int POS_DATE = 2;
 
-    public List<Site> read(String filename) throws IOException {
+    public List<Site> read(URI file) throws IOException {
         try {
-            this.in = Files.newBufferedReader(Paths.get(filename));
+            this.in = Files.newBufferedReader(Paths.get(file));
             if(this.in == null || !this.in.ready()) {
                 return new ArrayList<>();
             }
@@ -39,6 +40,14 @@ public class StrategySiteCSV extends CrawlerObject {
             return sites;
         } catch(IOException | ParseException e) {
             log.error("StrategySiteCSV:read()", e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Site> read(String filename) throws IOException {
+        try {
+            return this.read(new URI(filename));
+        }catch(Exception e) {
             return new ArrayList<>();
         }
     }

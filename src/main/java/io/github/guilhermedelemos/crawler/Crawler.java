@@ -18,6 +18,7 @@ import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.net.URI;
 
 public class Crawler extends CrawlerObject {
 
@@ -38,9 +39,9 @@ public class Crawler extends CrawlerObject {
         });
     }
 
-    public String loadJavaScriptFile(String filePath) {
+    public String loadJavaScriptFile(URI file) {
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(filePath));
+            byte[] encoded = Files.readAllBytes(Paths.get(file));
             String dados = new String(encoded, StandardCharsets.UTF_8);
             return dados;
         } catch (Exception e) {
@@ -48,94 +49,108 @@ public class Crawler extends CrawlerObject {
         }
     }
 
+    public String loadJavaScriptFile(String filePath) {
+        try {
+            return this.loadJavaScriptFile(new URI(filePath));
+        } catch(Exception e) {
+            return null;
+        }
+    }
+
     public boolean executeJavascript(List<Site> sites) {
-        if (sites.size() < 1) {
-            log.info("Nenhum site para processar.");
-            return true;
-        }
-
-        long startTime = System.currentTimeMillis();
-
-        // #1 WebDriver
-        log.info("Load Web Driver");
-        long startTimeWebDriver = System.currentTimeMillis();
-        WebDriver webDriver = WebDriverBuilder.buildChromeDriver(true, WebDriverBuilder.LANGUAGE_EN_US);
-        JavascriptExecutor js = (JavascriptExecutor) webDriver;
-        long endTimeWebDriver = System.currentTimeMillis();
-
-        // #2 Load crawler.js
-        String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler.js").getPath());
-        if (crawlerJS.isEmpty()) {
-            log.info("crawler.js não encontrado.");
-            return false;
-        }
-
-        // #2.1 Load jquery
-        String jqueryJS = this.loadJavaScriptFile(Resources.getResource("jquery-3.4.0.min.js").getPath());
-        if (jqueryJS.isEmpty()) {
-            log.info("jquery-3.4.0.min.js não encontrado.");
-            return false;
-        }
-
-        // #2.2 Load true-visibility
-        String visibilityJS = this.loadJavaScriptFile(Resources.getResource("visibility.js").getPath());
-        if (visibilityJS.isEmpty()) {
-            log.info("visibility.js não encontrado.");
-            return false;
-        }
-
-        // #3 Scan
-//        long sitesTotal = sites.size();
-        long startTimeScan = System.currentTimeMillis();
-        List<JSONObject> samples = new ArrayList<>();
-
-        sites.stream().forEach( (site) -> {
-            long startSiteScan = System.currentTimeMillis();
-            log.info("Varrendo " + site.getUrl());
-            try {
-                webDriver.get(site.getUrl());
-            } catch(org.openqa.selenium.TimeoutException e) {
-                log.error("Não foi possível carregar o site: " + site.getUrl());
-                return;
+        try {
+            if (sites.size() < 1) {
+                log.info("Nenhum site para processar.");
+                return true;
             }
-
-            js.executeScript(jqueryJS);
-            js.executeScript(visibilityJS);
-
-            Object retorno = js
-                    .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
-
-            if (retorno.toString().isEmpty()) {
-                log.info("Nenhuma landmark encontrada");
-            } else {
-                JSONArray jsonArray = new JSONArray(retorno.toString());
-                log.info(jsonArray.length() + " samples extracted");
-                for (int j = 0; j < jsonArray.length(); j++) {
-                    samples.add(jsonArray.getJSONObject(j));
+    
+            long startTime = System.currentTimeMillis();
+    
+            // #1 WebDriver
+            log.info("Load Web Driver");
+            long startTimeWebDriver = System.currentTimeMillis();
+            WebDriver webDriver = WebDriverBuilder.buildChromeDriver(true, WebDriverBuilder.LANGUAGE_EN_US);
+            JavascriptExecutor js = (JavascriptExecutor) webDriver;
+            long endTimeWebDriver = System.currentTimeMillis();
+    
+            // #2 Load crawler.js
+            log.info("Load crawler.js");
+            String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler.js").toURI());
+            if (crawlerJS.isEmpty()) {
+                log.info("crawler.js não encontrado.");
+                return false;
+            }
+    
+            // #2.1 Load jquery
+            String jqueryJS = this.loadJavaScriptFile(Resources.getResource("jquery-3.4.0.min.js").toURI());
+            if (jqueryJS.isEmpty()) {
+                log.info("jquery-3.4.0.min.js não encontrado.");
+                return false;
+            }
+    
+            // #2.2 Load true-visibility
+            String visibilityJS = this.loadJavaScriptFile(Resources.getResource("visibility.js").toURI());
+            if (visibilityJS.isEmpty()) {
+                log.info("visibility.js não encontrado.");
+                return false;
+            }
+    
+            // #3 Scan
+    //        long sitesTotal = sites.size();
+            long startTimeScan = System.currentTimeMillis();
+            List<JSONObject> samples = new ArrayList<>();
+    
+            sites.stream().forEach( (site) -> {
+                long startSiteScan = System.currentTimeMillis();
+                log.info("Varrendo " + site.getUrl());
+                try {
+                    webDriver.get(site.getUrl());
+                } catch(org.openqa.selenium.TimeoutException e) {
+                    log.error("Não foi possível carregar o site: " + site.getUrl());
+                    return;
                 }
+    
+                js.executeScript(jqueryJS);
+                js.executeScript(visibilityJS);
+    
+                Object retorno = js
+                        .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
+    
+                if (retorno.toString().isEmpty()) {
+                    log.info("Nenhuma landmark encontrada");
+                } else {
+                    JSONArray jsonArray = new JSONArray(retorno.toString());
+                    log.info(jsonArray.length() + " samples extracted");
+                    for (int j = 0; j < jsonArray.length(); j++) {
+                        samples.add(jsonArray.getJSONObject(j));
+                    }
+                }
+                long endSiteScan = System.currentTimeMillis();
+                log.info("Tempo para varrer o site: " + (endSiteScan - startSiteScan));
+            });
+    
+            // #4 Build dataset
+            Instant inicioDataset = Instant.now();
+            log.info("PASSO 4 - Criando dataset");
+            DatasetCSVStrategy dataset = new DatasetCSVStrategy();
+            boolean datasetCreated = dataset.createDataset(samples, "");
+            if (!datasetCreated) {
+                log.info("Erro ao criar o dataset");
             }
-            long endSiteScan = System.currentTimeMillis();
-            log.info("Tempo para varrer o site: " + (endSiteScan - startSiteScan));
-        });
-
-        // #4 Build dataset
-        Instant inicioDataset = Instant.now();
-        log.info("PASSO 4 - Criando dataset");
-        DatasetCSVStrategy dataset = new DatasetCSVStrategy();
-        boolean datasetCreated = dataset.createDataset(samples, "");
-        if (!datasetCreated) {
-            log.info("Erro ao criar o dataset");
+            log.info("Tempo de criação do dataset: " + Duration.between(inicioDataset, Instant.now()).toMillis() + " ms");
+    
+            long endTimeScan = System.currentTimeMillis();
+    
+            log.info("RESUMO");
+            log.info("Tempo para carregar o WebDriver: " + (endTimeWebDriver - startTimeWebDriver));
+            log.info("Tempo para varrer os sites: " + (endTimeScan - startTimeScan));
+            log.info("Tempo de execução: " + (System.currentTimeMillis() - startTime));
+            log.info("END");
+            return true;
+        } catch(Exception e) {
+            log.error("executeJavascript ERROR", e);
+            return false;
         }
-        log.info("Tempo de criação do dataset: " + Duration.between(inicioDataset, Instant.now()).toMillis() + " ms");
-
-        long endTimeScan = System.currentTimeMillis();
-
-        log.info("RESUMO");
-        log.info("Tempo para carregar o WebDriver: " + (endTimeWebDriver - startTimeWebDriver));
-        log.info("Tempo para varrer os sites: " + (endTimeScan - startTimeScan));
-        log.info("Tempo de execução: " + (System.currentTimeMillis() - startTime));
-        log.info("END");
-        return true;
     }
 
     public boolean scanJavaScript(String site, List<ARIALandmark> ariaLandmarks, WebDriver webDriver) {
