@@ -3,23 +3,7 @@ const ARIA_LANDMARKS = ['banner', 'complementary', 'contentinfo', 'form', 'main'
 ];
 const CLASS_OTHER = 'other';
 
-class SearchSample {
-    constructor({
-        landmark,
-        exists,
-        count
-    } = {}) {
-        this.landmark = landmark || null;
-        this.exists = exists || false;
-        this.count = count || 0;
-    }
-}
-
 class AccessibilityCrawler {
-
-    testCountDiv() {
-        return $("#div2 p").length;
-    }
 
     isJqueryLoadded() {
         return !!window.jQuery;

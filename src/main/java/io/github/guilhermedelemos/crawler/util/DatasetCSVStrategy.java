@@ -16,7 +16,7 @@ import java.util.List;
 
 public class DatasetCSVStrategy extends DatasetStrategy {
 
-    public static final String COLUMN_SEPARATOR = ";";
+    public static final String COLUMN_SEPARATOR = ",";
 
     private int counter;
 
@@ -34,7 +34,7 @@ public class DatasetCSVStrategy extends DatasetStrategy {
 
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             //writer.write("id;url;domId;tag;childrenCount;posX;posY;offsetX;offsetY;height;width;innerHeight;innerWidth;outerHeight;outerWidth;area;enabled;visible;class");
-            writer.write("id;url;domId;tag;childrenCount;posX;posY;offsetX;offsetY;height;width;innerHeight;innerWidth;outerHeight;outerWidth;area;enabled;visible;tagACountLv1;tagACountAll;tagArticleCountLv1;tagArticleCountAll;tagAsideCountLv1;tagAsideCountAll;tagBrCountLv1;tagBrCountAll;tagButtonCountLv1;tagButtonCountAll;tagCanvasCountLv1;tagCanvasCountAll;tagDivCountLv1;tagDivCountAll;tagFooterCountLv1;tagFooterCountAll;tagFormCountLv1;tagFormCountAll;tagH1CountLv1;tagH1CountAll;tagH2CountLv1;tagH2CountAll;tagH3CountLv1;tagH3CountAll;tagH4CountLv1;tagH4CountAll;tagH5CountLv1;tagH5CountAll;tagH6CountLv1;tagH6CountAll;tagHeaderCountLv1;tagHeaderCountAll;tagHrCountLv1;tagHrCountAll;tagIframeCountLv1;tagIframeCountAll;tagImgCountLv1;tagImgCountAll;tagInputCountLv1;tagInputCountAll;tagLabelCountLv1;tagLabelCountAll;tagLiCountLv1;tagLiCountAll;tagMainCountLv1;tagMainCountAll;tagNavCountLv1;tagNavCountAll;tagObjectCountLv1;tagObjectCountAll;tagOlCountLv1;tagOlCountAll;tagPCountLv1;tagPCountAll;tagSectionCountLv1;tagSectionCountAll;tagSelectCountLv1;tagSelectCountAll;tagSmallCountLv1;tagSmallCountAll;tagStrongCountLv1;tagStrongCountAll;tagSubCountLv1;tagSubCountAll;tagSupCountLv1;tagSupCountAll;tagSvgCountLv1;tagSvgCountAll;tagTableCountLv1;tagTableCountAll;tagTextareaCountLv1;tagTextareaCountAll;tagUlCountLv1;tagUlCountAll;class");
+            writer.write("id,url,xpath,domId,tag,role,childrenCount,posX,posY,offsetX,offsetY,height,width,innerHeight,innerWidth,outerHeight,outerWidth,area,enabled,visible,tagACountLv1,tagACountAll,tagArticleCountLv1,tagArticleCountAll,tagAsideCountLv1,tagAsideCountAll,tagBrCountLv1,tagBrCountAll,tagButtonCountLv1,tagButtonCountAll,tagCanvasCountLv1,tagCanvasCountAll,tagDivCountLv1,tagDivCountAll,tagFooterCountLv1,tagFooterCountAll,tagFormCountLv1,tagFormCountAll,tagH1CountLv1,tagH1CountAll,tagH2CountLv1,tagH2CountAll,tagH3CountLv1,tagH3CountAll,tagH4CountLv1,tagH4CountAll,tagH5CountLv1,tagH5CountAll,tagH6CountLv1,tagH6CountAll,tagHeaderCountLv1,tagHeaderCountAll,tagHrCountLv1,tagHrCountAll,tagIframeCountLv1,tagIframeCountAll,tagImgCountLv1,tagImgCountAll,tagInputCountLv1,tagInputCountAll,tagLabelCountLv1,tagLabelCountAll,tagLiCountLv1,tagLiCountAll,tagMainCountLv1,tagMainCountAll,tagNavCountLv1,tagNavCountAll,tagObjectCountLv1,tagObjectCountAll,tagOlCountLv1,tagOlCountAll,tagPCountLv1,tagPCountAll,tagSectionCountLv1,tagSectionCountAll,tagSelectCountLv1,tagSelectCountAll,tagSmallCountLv1,tagSmallCountAll,tagStrongCountLv1,tagStrongCountAll,tagSubCountLv1,tagSubCountAll,tagSupCountLv1,tagSupCountAll,tagSvgCountLv1,tagSvgCountAll,tagTableCountLv1,tagTableCountAll,tagTextareaCountLv1,tagTextareaCountAll,tagUlCountLv1,tagUlCountAll,class");
             writer.newLine();
 
             long count = 0;
@@ -45,8 +45,10 @@ public class DatasetCSVStrategy extends DatasetStrategy {
                 StringBuilder line = new StringBuilder();
                 line.append(count).append(COLUMN_SEPARATOR); // id
                 line.append(sample.getString("url")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "xpath")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "domId")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "tag")).append(COLUMN_SEPARATOR);
+                line.append(this.getJSONValue(sample, "role")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "childrenCount")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "posX")).append(COLUMN_SEPARATOR);
                 line.append(this.getJSONValue(sample, "posY")).append(COLUMN_SEPARATOR);

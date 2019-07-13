@@ -74,10 +74,10 @@ public class Crawler extends CrawlerObject {
             long endTimeWebDriver = System.currentTimeMillis();
     
             // #2 Load crawler.js
-            log.info("Load crawler.js");
-            String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler.js").toURI());
+            log.info("Load crawler.min.js");
+            String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler.min.js").toURI());
             if (crawlerJS.isEmpty()) {
-                log.info("crawler.js não encontrado.");
+                log.info("crawler.min.js não encontrado.");
                 return false;
             }
     
@@ -89,11 +89,11 @@ public class Crawler extends CrawlerObject {
             }
     
             // #2.2 Load true-visibility
-            String visibilityJS = this.loadJavaScriptFile(Resources.getResource("visibility.js").toURI());
-            if (visibilityJS.isEmpty()) {
-                log.info("visibility.js não encontrado.");
-                return false;
-            }
+//            String visibilityJS = this.loadJavaScriptFile(Resources.getResource("visibility.js").toURI());
+//            if (visibilityJS.isEmpty()) {
+//                log.info("visibility.js não encontrado.");
+//                return false;
+//            }
     
             // #3 Scan
     //        long sitesTotal = sites.size();
@@ -111,10 +111,10 @@ public class Crawler extends CrawlerObject {
                 }
     
                 js.executeScript(jqueryJS);
-                js.executeScript(visibilityJS);
+//                js.executeScript(visibilityJS);
     
                 Object retorno = js
-                        .executeScript(crawlerJS + "return (new AccessibilityCrawler()).execute()");
+                        .executeScript(crawlerJS + "return ((new crawler.default()).execute(false, true))");
     
                 if (retorno.toString().isEmpty()) {
                     log.info("Nenhuma landmark encontrada");
