@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Sceenshot extends CrawlerObject {
+public class Screenshot extends CrawlerObject {
 
     public static void printscr(WebDriver driver) {
         printscr(
@@ -22,6 +22,9 @@ public class Sceenshot extends CrawlerObject {
     public static void printscr(WebDriver driver, String file) {
         if(file == null || file.isEmpty()) {
             return;
+        }
+        if(!file.endsWith(".png")) {
+            file += ".png";
         }
         File imageFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
         try {

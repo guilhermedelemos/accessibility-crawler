@@ -24,3 +24,6 @@ bin/
 *.arff
 *.ods
 *.zip
+
+# Specific
+out/

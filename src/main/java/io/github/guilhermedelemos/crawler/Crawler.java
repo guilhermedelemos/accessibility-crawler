@@ -5,8 +5,11 @@ import com.google.common.io.Resources;
 import io.github.guilhermedelemos.crawler.model.*;
 import io.github.guilhermedelemos.crawler.util.*;
 import org.openqa.selenium.*;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -65,7 +68,21 @@ public class Crawler extends CrawlerObject {
             }
     
             long startTime = System.currentTimeMillis();
-    
+
+            // #0 Output directory
+            File mainOutputDirectory = new File((new File(".")).getCanonicalPath(), "out");
+            if(!mainOutputDirectory.exists()) {
+                mainOutputDirectory.mkdir();
+            }
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmm");
+            String newDir = format.format(new Date());
+//            String diretorioExecucao = Files.createDirectories(execucao);
+            File outTarget = new File(mainOutputDirectory, newDir);
+            if(!outTarget.exists()) {
+                outTarget.mkdir();
+            }
+
             // #1 WebDriver
             log.info("Load Web Driver");
             long startTimeWebDriver = System.currentTimeMillis();
@@ -105,6 +122,7 @@ public class Crawler extends CrawlerObject {
                 log.info("Varrendo " + site.getUrl());
                 try {
                     webDriver.get(site.getUrl());
+                    this.takeScreenshot(webDriver, outTarget.getAbsolutePath(), site);
                 } catch(org.openqa.selenium.TimeoutException e) {
                     log.error("Não foi possível carregar o site: " + site.getUrl());
                     return;
@@ -133,7 +151,10 @@ public class Crawler extends CrawlerObject {
             Instant inicioDataset = Instant.now();
             log.info("PASSO 4 - Criando dataset");
             DatasetCSVStrategy dataset = new DatasetCSVStrategy();
-            boolean datasetCreated = dataset.createDataset(samples, "");
+            boolean datasetCreated = dataset.createDataset(
+                    samples,
+                    outTarget.getAbsolutePath() + File.separator + "dataset.csv"
+            );
             if (!datasetCreated) {
                 log.info("Erro ao criar o dataset");
             }
@@ -151,6 +172,21 @@ public class Crawler extends CrawlerObject {
             log.error("executeJavascript ERROR", e);
             return false;
         }
+    }
+
+    public boolean takeScreenshot(WebDriver driver, String directory, Site site) {
+        if(driver == null || directory == null || directory.isEmpty() || site == null) {
+            return false;
+        }
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append(directory).append(File.separator).append( (new URI(site.getUrl())).getHost() );
+            Screenshot.printscr(driver, sb.toString());
+        } catch(URISyntaxException e) {
+            this.log.error("Screeshot error", e);
+            return false;
+        }
+        return true;
     }
 
     public boolean scanJavaScript(String site, List<ARIALandmark> ariaLandmarks, WebDriver webDriver) {
@@ -258,7 +294,7 @@ public class Crawler extends CrawlerObject {
 
             Log.logWebPage(webPage, log);
 
-            Sceenshot.printscr(webDriver);
+            Screenshot.printscr(webDriver);
 
             return webPage;
         } catch (Exception e) {
