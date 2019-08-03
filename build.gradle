@@ -15,7 +15,7 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'org.json:json:20180813'
     // Selenium Web Driver Manager
-    implementation 'io.github.bonigarcia:webdrivermanager:3.6.1'
+    implementation 'io.github.bonigarcia:webdrivermanager:3.6.2'
     // Selenium
     implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
     // JUnit 5
