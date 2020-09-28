@@ -29,6 +29,7 @@ public class StrategySiteCSV extends CrawlerObject {
             List<Site> sites = new ArrayList<>();
             String line;
             while ((line = this.in.readLine()) != null) {
+                if(line.trim().isEmpty()) { continue; }
                 String[] data = line.split(this.separator);
                 sites.add(
                         new Site(Integer.parseInt(data[POS_RANK]),

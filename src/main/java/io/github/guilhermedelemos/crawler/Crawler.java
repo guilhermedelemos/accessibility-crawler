@@ -86,13 +86,13 @@ public class Crawler extends CrawlerObject {
             // #1 WebDriver
             log.info("Load Web Driver");
             long startTimeWebDriver = System.currentTimeMillis();
-            WebDriver webDriver = WebDriverBuilder.buildChromeDriver(true, WebDriverBuilder.LANGUAGE_EN_US);
+            WebDriver webDriver = WebDriverBuilder.buildChromeDriver(false, WebDriverBuilder.LANGUAGE_EN_US);
             JavascriptExecutor js = (JavascriptExecutor) webDriver;
             long endTimeWebDriver = System.currentTimeMillis();
     
             // #2 Load crawler.js
             log.info("Load crawler.min.js");
-            String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler.min.js").toURI());
+            String crawlerJS = this.loadJavaScriptFile(Resources.getResource("crawler1.1.0.min.js").toURI());
             if (crawlerJS.isEmpty()) {
                 log.info("crawler.min.js não encontrado.");
                 return false;
@@ -119,33 +119,42 @@ public class Crawler extends CrawlerObject {
     
             sites.stream().forEach( (site) -> {
                 long startSiteScan = System.currentTimeMillis();
-                log.info("Varrendo " + site.getUrl());
+                log.info("Carregando " + site.getUrl());
                 try {
                     webDriver.get(site.getUrl());
+                    try { Thread.sleep (5000); } catch (InterruptedException ex) {}
                     this.takeScreenshot(webDriver, outTarget.getAbsolutePath(), site);
                 } catch(org.openqa.selenium.TimeoutException e) {
                     log.error("Não foi possível carregar o site: " + site.getUrl());
                     return;
                 }
+                try {
     
-                js.executeScript(jqueryJS);
-//                js.executeScript(visibilityJS);
-    
-                Object retorno = js
-                        .executeScript(crawlerJS + "return ((new crawler.default()).execute(false, true))");
-    
-                if (retorno.toString().isEmpty()) {
-                    log.info("Nenhuma landmark encontrada");
-                } else {
-                    JSONArray jsonArray = new JSONArray(retorno.toString());
-                    log.info(jsonArray.length() + " samples extracted");
-                    for (int j = 0; j < jsonArray.length(); j++) {
-                        samples.add(jsonArray.getJSONObject(j));
+                    log.info("Extraindo");
+                    js.executeScript(jqueryJS);
+        
+                    Object retorno = js
+                            .executeScript(crawlerJS + "return ((new crawler.default()).execute(false, true))");
+        
+                    if (retorno.toString().isEmpty()) {
+                        log.info("Nenhuma landmark encontrada");
+                    } else {
+                        JSONArray jsonArray = new JSONArray(retorno.toString());
+                        log.info(jsonArray.length() + " samples extracted");
+                        for (int j = 0; j < jsonArray.length(); j++) {
+                            samples.add(jsonArray.getJSONObject(j));
+                        }
                     }
+                } catch(Exception e) {
+                    log.error("Erro ao extrair elementos do site: " + site.getUrl());
+                    e.printStackTrace();
                 }
                 long endSiteScan = System.currentTimeMillis();
                 log.info("Tempo para varrer o site: " + (endSiteScan - startSiteScan));
             });
+
+            webDriver.close();
+            webDriver.quit();
     
             // #4 Build dataset
             Instant inicioDataset = Instant.now();
